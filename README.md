@@ -1,8 +1,6 @@
-**Sign-Language-Interpreter-using-Deep-Learning** I **SDP - IH18 Project**
+<h1>Sign-Language-Interpreter-using-Deep-Learning I SDP - IH18 Project</h1>
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-<ins>**Contributors**<ins>
+<h2><b>Contributors</b></h2>
 
 Ansuman Mohanty
 
@@ -12,17 +10,13 @@ Priyadarshini Nayak
 
 Kumar Spandan Pattanayak
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-<ins>**About**<ins>
+<h2><b>About</b></h2>
 
 **Sign Language Interpreter using Deep Learning** is a part of our B.Tech final year SDP project. This project was developed to procure a way for individuals with hearing 
 impairments to communicate effortlessly in diverse social settings.The core algorithmic approach involves training neural networks on extensive datasets containing diverse sign 
 language gestures.TensorFlow is used for efficient training and deployment of models for accurate gesture recognition and OpenCV is integrated to handle image and video processing tasks.
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-<ins>**Dependencies**<ins>
+<h2><b>Dependencies</b></h2>
 
 1.Python 3.11
 
@@ -36,9 +30,7 @@ language gestures.TensorFlow is used for efficient training and deployment of mo
 
 6.mediapipe
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-<ins>**Instructions**<ins>
+<h2><b>Instructions</b></h2>
 
 1.Install python 3.11 
 
@@ -63,14 +55,14 @@ macOS and Linux
 
     pip install tensorflow opencv-python mediapipe scikit-learn numpy
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-<ins>**Project Structure**<ins>
+<h2><b>Project Structure</b></h2>
 
 1. Data-Creation.py collects images for training set.
  
 2. Model-Creation.py creates a model using TensorFlow based on the training set.
  
-3. final.py  uses the trained model to predict sign gestures using live video feed from the camera.
+3. final.py uses the trained model to predict sign gestures using live video feed from the camera.
+
+4. action.h5 is a prebuilt model that is able to predict three actions - hello, thankyou, iloveyou
 
 For detailed understanding, follow this youtube tutorial : https://www.youtube.com/watch?v=doDUihpj6ro&list=PLr_UfzFd0m3k8sh4agDt1ZKarDfMEGXcx&t=7905
