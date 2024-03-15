@@ -57,12 +57,12 @@ macOS and Linux
 
 <h2><b>Project Structure</b></h2>
 
-1. Data-Creation.py collects images for training set.
+1. <b>Data-Creation.py</b> collects images for training set.
  
-2. Model-Creation.py creates a model using TensorFlow based on the training set.
+2. <b>Model-Creation.py</b> creates a model using TensorFlow based on the training set.
  
-3. final.py uses the trained model to predict sign gestures using live video feed from the camera.
+3. <b>final.py</b> uses the trained model to predict sign gestures using live video feed from the camera.
 
-4. action.h5 is a prebuilt model that is able to predict three actions - hello, thankyou, iloveyou
+4. <b>action.h5</b> is a prebuilt model that is able to predict three actions - hello, thankyou, iloveyou
 
 For detailed understanding, follow this youtube tutorial : https://www.youtube.com/watch?v=doDUihpj6ro&list=PLr_UfzFd0m3k8sh4agDt1ZKarDfMEGXcx&t=7905
