@@ -59,7 +59,7 @@ def extract_keypoints(results):
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
     return np.concatenate([pose, face, lh, rh])
 
-model.load_weights('action.h5')
+model.load_weights('model.h5')
 
 # 1. New detection variables
 sequence = []

@@ -63,9 +63,7 @@ actions[np.argmax(res[0])]
 
 actions[np.argmax(y_test[0])]
 
-model.save('action1.h5')
-
-#model.load_weights('action.h5')
+model.save('model.h5')
 
 yhat = model.predict(X_test)
 
