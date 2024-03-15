@@ -2,13 +2,10 @@
 
 <h2><b>Contributors</b></h2>
 
-Ansuman Mohanty
-
-Rounak Kumar Khuntia
-
-Priyadarshini Nayak
-
-Kumar Spandan Pattanayak
+- [Ansuman Mohanty](https://github.com/Ansuman3152)
+- [Rounak Kumar Khuntia](https://github.com/RonakKhuntia)
+- [Priyadarshini Nayak](https://github.com/priyu1109)
+- [Kumar Spandan Pattanayak](https://github.com/5p7Ro0t)
 
 <h2><b>About</b></h2>
 
@@ -49,7 +46,8 @@ If you have a macOS or Linux you can download your respective installer from thi
 
 Windows
 
-    python -m pip install tensorflow opencv-python mediapipe scikit-learn numpy 
+    python -m pip install tensorflow opencv-python mediapipe scikit-learn numpy
+
 
 macOS and Linux
 
