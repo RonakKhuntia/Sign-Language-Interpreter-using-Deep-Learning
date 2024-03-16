@@ -12,17 +12,8 @@ mp_drawing = mp.solutions.drawing_utils # Drawing utilities
 log_dir = os.path.join('Logs')
 tb_callback = TensorBoard(log_dir=log_dir)
 
-# Path for exported data, numpy arrays
-DATA_PATH = os.path.join('MP_Data') 
-
 # Actions that we try to detect
 actions = np.array(['hello', 'thanks', 'iloveyou'])
-
-# Thirty videos worth of data
-no_sequences = 30
-
-# Videos are going to be 30 frames in length
-sequence_length = 30
 
 model = Sequential()
 model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
@@ -64,7 +55,8 @@ model.load_weights('model.h5')
 # 1. New detection variables
 sequence = []
 sentence = []
-threshold = 0.8
+predictions = []
+threshold = 0.5
 
 cap = cv2.VideoCapture(0)
 # Set mediapipe model 
@@ -83,29 +75,27 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         
         # 2. Prediction logic
         keypoints = extract_keypoints(results)
-#         sequence.insert(0,keypoints)
-#         sequence = sequence[:30]
         sequence.append(keypoints)
         sequence = sequence[-30:]
         
         if len(sequence) == 30:
             res = model.predict(np.expand_dims(sequence, axis=0))[0]
             print(actions[np.argmax(res)])
+            predictions.append(np.argmax(res))
             
             
         #3. Viz logic
-            if res[np.argmax(res)] > threshold: 
-                if len(sentence) > 0: 
-                    if actions[np.argmax(res)] != sentence[-1]:
+            if np.unique(predictions[-10:])[0]==np.argmax(res): 
+                if res[np.argmax(res)] > threshold: 
+                    
+                    if len(sentence) > 0: 
+                        if actions[np.argmax(res)] != sentence[-1]:
+                            sentence.append(actions[np.argmax(res)])
+                    else:
                         sentence.append(actions[np.argmax(res)])
-                else:
-                    sentence.append(actions[np.argmax(res)])
 
             if len(sentence) > 5: 
                 sentence = sentence[-5:]
-
-            # Viz probabilities
-            #image = prob_viz(res, actions, image, colors)
             
         cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
         cv2.putText(image, ' '.join(sentence), (3,30), 
@@ -117,6 +107,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         # Break gracefully
         if cv2.waitKey(10) & 0xFF == ord('q'):
             break
+        
     cap.release()
     cv2.destroyAllWindows()
 
