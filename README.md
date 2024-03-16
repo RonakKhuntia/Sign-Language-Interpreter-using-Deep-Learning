@@ -9,7 +9,7 @@
 
 <h2><b>About</b></h2>
 
-**Sign Language Interpreter using Deep Learning** is a part of our B.Tech final year SDP project. This project was developed to procure a way for individuals with hearing 
+**" Sign Language Interpreter using Deep Learning "** is a part of our B.Tech final year SDP project. This project was developed to procure a way for individuals with hearing 
 impairments to communicate effortlessly in diverse social settings.The core algorithmic approach involves training neural networks on extensive datasets containing diverse sign 
 language gestures.TensorFlow is used for efficient training and deployment of models for accurate gesture recognition and OpenCV is integrated to handle image and video processing tasks.
 
