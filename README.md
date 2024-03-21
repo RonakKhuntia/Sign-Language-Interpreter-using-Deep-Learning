@@ -55,7 +55,7 @@ macOS and Linux
 
 <h2><b>Project Structure</b></h2>
 
-0. <b>setup-folders.py</b> creates folders for storing training data for every action. Run this program first before proceeding to Data-Creationa and Model-Creation.
+0. <b>setup-folders.py</b> creates folders for storing training data for every action. Run this program first before proceeding to Data-Creation and Model-Creation.
 
 1. <b>Data-Creation.py</b> collects images for training set.
  
