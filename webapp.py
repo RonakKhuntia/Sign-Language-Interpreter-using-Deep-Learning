@@ -20,7 +20,10 @@ from model import PointHistoryClassifier
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--device", type=int, default=0)
+    # Get camera index from user input or use default (e.g., 0 for the first camera)
+    camera_index = st.sidebar.slider("Select Camera Index", 0, 10, 0)
+
+    parser.add_argument("--device", type=int, default=camera_index)
     parser.add_argument("--width", help='cap width', type=int, default=960)
     parser.add_argument("--height", help='cap height', type=int, default=540)
 
