@@ -64,10 +64,6 @@ The following files are stored.
 
 <h2>Training</h2>
 
-Hand sign recognition and finger gesture recognition can add and change training data and retrain the model.
-
-<h3>Hand sign recognition training</h3>
-
 <b>1.Learning data collection</b>
 
 Press "k" to enter the mode to save key points（displayed as 「MODE:Logging Key Point」）.
@@ -76,4 +72,4 @@ If you press "0" to "9", the key points will be added to "model/keypoint_classif
 <b>2.Model training</b>
 
 Open "keypoint_classification.ipynb" in Jupyter Notebook and execute from top to bottom.
-To change the number of training data classes, change the value of "NUM_CLASSES" and modify the label of "model/keypoint_classifier/keypoint_classifier_label.csv" as appropriate.
+To change the number of training data classes, change the value of "NUM_CLASSES" and modify the label of  "model/keypoint_classifier/keypoint_classifier_label.csv" as appropriate.
