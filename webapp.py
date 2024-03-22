@@ -18,7 +18,7 @@ import mediapipe as mp
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
 
-st.title("Sign Language Detector")
+st.title("Sign Language Interpreter")
 
 import streamlit as st
 
