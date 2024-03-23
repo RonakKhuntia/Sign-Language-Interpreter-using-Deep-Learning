@@ -7,7 +7,7 @@ import argparse
 import itertools
 from collections import Counter
 from collections import deque
-from streamlit_webrtc import webrtc_streamer
+from streamlit_webrtc import WebRtcMode, webrtc_streamer
 import av
 
 import cv2 as cv
@@ -154,9 +154,12 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
 
 webrtc_streamer(key="sample",
                 video_frame_callback=callback,
+                mode=WebRtcMode.SENDRECV,
                 rtc_configuration={  # Add this config
-                        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-                    }
+                    "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+                },
+                media_stream_constraints={"video": True, "audio": False},
+                async_processing=True,
                 )
 
 def get_args():
