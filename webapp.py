@@ -150,9 +150,11 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
     debug_image = draw_point_history(debug_image, point_history)
     debug_image = draw_info(debug_image, mode, number)
 
+    #flipped = debug_image[::-1,:,:]
+
     return av.VideoFrame.from_ndarray(debug_image, format="bgr24")
 
-webrtc_streamer(key="sample",
+webrtc_streamer(key="sli",
                 video_frame_callback=callback
                 )
 
