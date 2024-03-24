@@ -14,14 +14,12 @@ import cv2 as cv
 import numpy as np
 import mediapipe as mp
 
-from model import KeyPointClassifier
-
 st.title("Sign Language Interpreter")
 
 import streamlit as st
 
 # Sidebar
-st.sidebar.title("Sing Language Interpreter using Deep Learning I SDP-IH18 Project")
+st.sidebar.title("Sign Language Interpreter using Deep Learning I SDP-IH18 Project")
 
 # Contributors
 st.sidebar.header("Contributors")
