@@ -64,7 +64,6 @@ def load_model(model_path='model/keypoint_classifier/keypoint_classifier.tflite'
     return interpreter, input_details, output_details
 
 def classify_keypoints(interpreter, input_details, output_details, landmark_list):
-    print('predicting hand sign...')
     input_details_tensor_index = input_details[0]['index']
     interpreter.set_tensor(input_details_tensor_index, np.array([landmark_list], dtype=np.float32))
     interpreter.invoke()
