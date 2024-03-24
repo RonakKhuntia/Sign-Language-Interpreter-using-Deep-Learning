@@ -15,7 +15,6 @@ import numpy as np
 import mediapipe as mp
 
 from model import KeyPointClassifier
-from model import PointHistoryClassifier
 
 st.title("Sign Language Interpreter")
 
@@ -38,9 +37,15 @@ for contributor, github_link in contributors.items():
 # About
 st.sidebar.header("About")
 st.sidebar.markdown("""
-**"Sing Language Interpreter using Deep Learning"** is a part of B.Tech Final Year SDP Project. The primary objective is to develop an accurate and efficient system capable of translating sign language gestures into text, facilitating seamless interaction for the deaf and hard-of-hearing community. The system utilizes neural networks trained on extensive sign language datasets to recognize the intricate movements and expressions inherent in sign language. Computer vision techniques are employed to capture and interpret gestures accurately, ensuring a high level of precision in the translation process.
+                    
+**"Sign Language Interpreter using Deep Learning"** is a part of our B.Tech Final Year SDP Project. 
+                    
+The primary objective is to develop an accurate and efficient system capable of translating sign language gestures into text,facilitating seamless interaction for the deaf and hard-of-hearing community. 
+                
+The system utilizes neural networks trained on extensive sign language datasets to recognize the intricate movements and expressions inherent in sign language. Computer vision techniques are employed to capture and interpret gestures accurately, ensuring a high level of precision in the translation process.
 
 **The current model is able to predict 8 hand signs** - Hello, Yes, No, Dislike, Like, Ok, Peace, ILoveYou
+                    
 """)
 
 
@@ -70,25 +75,11 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
         keypoint_classifier_labels = [
             row[0] for row in keypoint_classifier_labels
         ]
-    with open(
-            'model/point_history_classifier/point_history_classifier_label.csv',
-            encoding='utf-8-sig') as f:
-        point_history_classifier_labels = csv.reader(f)
-        point_history_classifier_labels = [
-            row[0] for row in point_history_classifier_labels
-        ]
-
     history_length = 16
 
     point_history = deque(maxlen=history_length)
 
     keypoint_classifier = KeyPointClassifier()
-
-    #point_history_classifier = PointHistoryClassifier()
-    
-    #finger_gesture_history = deque(maxlen=history_length)
-
-    mode = 0
 
     debug_image = copy.deepcopy(image)
     
@@ -109,8 +100,6 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
                 # Conversion to relative coordinates / normalized coordinates
                 pre_processed_landmark_list = pre_process_landmark(
                     landmark_list)
-                pre_processed_point_history_list = pre_process_point_history(
-                    debug_image, point_history)
 
                 # Hand sign classification
                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
@@ -118,18 +107,6 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
                     point_history.append(landmark_list[8])
                 else:
                     point_history.append([0, 0])
-
-                # # Finger gesture classification
-                # finger_gesture_id = 0
-                # point_history_len = len(pre_processed_point_history_list)
-                # if point_history_len == (history_length * 2):
-                #     finger_gesture_id = point_history_classifier(
-                #         pre_processed_point_history_list)
-
-                # # Calculates the gesture IDs in the latest detection
-                # finger_gesture_history.append(finger_gesture_id)
-                # most_common_fg_id = Counter(
-                #     finger_gesture_history).most_common()
 
                 # Drawing part
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
@@ -152,7 +129,7 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
 webrtc_streamer(key="sample",
                 video_frame_callback=callback,
                 mode=WebRtcMode.SENDRECV,
-                rtc_configuration={  # Add this config
+                rtc_configuration={ 
                     "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
                 },
                 media_stream_constraints={"video": True, "audio": False},
@@ -163,8 +140,8 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--device", type=int, default=0)
-    parser.add_argument("--width", help='cap width', type=int, default=960)
-    parser.add_argument("--height", help='cap height', type=int, default=540)
+    parser.add_argument("--width", help='cap width', type=int, default=640)
+    parser.add_argument("--height", help='cap height', type=int, default=360)
 
     parser.add_argument('--use_static_image_mode', action='store_true')
     parser.add_argument("--min_detection_confidence",
