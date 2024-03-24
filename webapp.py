@@ -8,6 +8,7 @@ import itertools
 from collections import deque
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
 import av
+import tensorflow as tf
 
 import cv2 as cv
 import numpy as np
@@ -53,6 +54,28 @@ image = open("hand-signs.jpg", "rb").read()
 # Display the image
 st.sidebar.image(image, caption='hand signs', use_column_width=True)
 
+@st.cache_resource
+def load_model(model_path='model/keypoint_classifier/keypoint_classifier.tflite', num_threads=1):
+    interpreter = tf.lite.Interpreter(model_path=model_path, num_threads=num_threads)
+    interpreter.allocate_tensors()
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+    print('Model loaded successfully')
+    return interpreter, input_details, output_details
+
+def classify_keypoints(interpreter, input_details, output_details, landmark_list):
+    print('predicting hand sign...')
+    input_details_tensor_index = input_details[0]['index']
+    interpreter.set_tensor(input_details_tensor_index, np.array([landmark_list], dtype=np.float32))
+    interpreter.invoke()
+
+    output_details_tensor_index = output_details[0]['index']
+
+    result = interpreter.get_tensor(output_details_tensor_index)
+        
+    result_index = np.argmax(np.squeeze(result))
+    
+    return result_index
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -103,7 +126,7 @@ history_length = 16
 
 point_history = deque(maxlen=history_length)
 
-keypoint_classifier = KeyPointClassifier()
+keypoint_classifier = load_model()
 
 def callback(frame: av.VideoFrame) -> av.VideoFrame:
 
@@ -130,7 +153,7 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
                     landmark_list)
 
                 # Hand sign classification
-                hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
+                hand_sign_id = classify_keypoints(keypoint_classifier[0],keypoint_classifier[1],keypoint_classifier[2],pre_processed_landmark_list)
                 if hand_sign_id == 2:  # Point gesture
                     point_history.append(landmark_list[8])
                 else:

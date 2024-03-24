@@ -3,7 +3,6 @@
 import numpy as np
 import tensorflow as tf
 
-
 class KeyPointClassifier(object):
     def __init__(
         self,
