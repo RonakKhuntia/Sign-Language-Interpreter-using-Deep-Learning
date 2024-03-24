@@ -5,7 +5,6 @@ import csv
 import copy
 import argparse
 import itertools
-from collections import Counter
 from collections import deque
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
 import av
@@ -48,46 +47,68 @@ The system utilizes neural networks trained on extensive sign language datasets 
                     
 """)
 
+def get_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--device", type=int, default=0)
+    parser.add_argument("--width", help='cap width', type=int, default=640)
+    parser.add_argument("--height", help='cap height', type=int, default=360)
+
+    parser.add_argument('--use_static_image_mode', action='store_true')
+    parser.add_argument("--min_detection_confidence",
+                        help='min_detection_confidence',
+                        type=float,
+                        default=0.7)
+    parser.add_argument("--min_tracking_confidence",
+                        help='min_tracking_confidence',
+                        type=int,
+                        default=0.5)
+
+    args = parser.parse_args()
+
+    return args
+
+args = get_args()
+
+use_static_image_mode = args.use_static_image_mode
+min_detection_confidence = args.min_detection_confidence
+min_tracking_confidence = args.min_tracking_confidence
+
+use_brect = True
+
+mp_hands = mp.solutions.hands
+
+hands = mp_hands.Hands(
+    static_image_mode=use_static_image_mode,
+    max_num_hands=2,
+    min_detection_confidence=min_detection_confidence,
+    min_tracking_confidence=min_tracking_confidence,
+)
+
+with open('model/keypoint_classifier/keypoint_classifier_label.csv',
+            encoding='utf-8-sig') as f:
+    keypoint_classifier_labels = csv.reader(f)
+    keypoint_classifier_labels = [
+        row[0] for row in keypoint_classifier_labels
+    ]
+
+history_length = 16
+
+point_history = deque(maxlen=history_length)
+
+keypoint_classifier = KeyPointClassifier()
 
 def callback(frame: av.VideoFrame) -> av.VideoFrame:
+
     image = frame.to_ndarray(format="bgr24")
-
-    args = get_args()
-
-    use_static_image_mode = args.use_static_image_mode
-    min_detection_confidence = args.min_detection_confidence
-    min_tracking_confidence = args.min_tracking_confidence
-
-    use_brect = True
-
-    mp_hands = mp.solutions.hands
-
-    hands = mp_hands.Hands(
-        static_image_mode=use_static_image_mode,
-        max_num_hands=2,
-        min_detection_confidence=min_detection_confidence,
-        min_tracking_confidence=min_tracking_confidence,
-    )
-
-    with open('model/keypoint_classifier/keypoint_classifier_label.csv',
-              encoding='utf-8-sig') as f:
-        keypoint_classifier_labels = csv.reader(f)
-        keypoint_classifier_labels = [
-            row[0] for row in keypoint_classifier_labels
-        ]
-    history_length = 16
-
-    point_history = deque(maxlen=history_length)
-
-    keypoint_classifier = KeyPointClassifier()
 
     debug_image = copy.deepcopy(image)
     
-    debug_image = cv.cvtColor(debug_image, cv.COLOR_BGR2RGB)
+    image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
-    debug_image.flags.writeable = False
-    results = hands.process(debug_image)
-    debug_image.flags.writeable = True
+    image.flags.writeable = False
+    results = hands.process(image)
+    image.flags.writeable = True
 
     if results.multi_hand_landmarks is not None:
             for hand_landmarks, handedness in zip(results.multi_hand_landmarks,
@@ -122,8 +143,6 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
 
     debug_image = draw_point_history(debug_image, point_history)
 
-    debug_image = cv.cvtColor(debug_image, cv.COLOR_RGB2BGR)
-
     return av.VideoFrame.from_ndarray(debug_image, format="bgr24")
 
 webrtc_streamer(key="sample",
@@ -135,28 +154,6 @@ webrtc_streamer(key="sample",
                 media_stream_constraints={"video": True, "audio": False},
                 async_processing=True,
                 )
-
-def get_args():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--device", type=int, default=0)
-    parser.add_argument("--width", help='cap width', type=int, default=640)
-    parser.add_argument("--height", help='cap height', type=int, default=360)
-
-    parser.add_argument('--use_static_image_mode', action='store_true')
-    parser.add_argument("--min_detection_confidence",
-                        help='min_detection_confidence',
-                        type=float,
-                        default=0.7)
-    parser.add_argument("--min_tracking_confidence",
-                        help='min_tracking_confidence',
-                        type=int,
-                        default=0.5)
-
-    args = parser.parse_args()
-
-    return args
-
 
 def calc_bounding_rect(image, landmarks):
     image_width, image_height = image.shape[1], image.shape[0]

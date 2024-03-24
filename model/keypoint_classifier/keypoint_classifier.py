@@ -30,7 +30,7 @@ class KeyPointClassifier(object):
         output_details_tensor_index = self.output_details[0]['index']
 
         result = self.interpreter.get_tensor(output_details_tensor_index)
-
+        
         result_index = np.argmax(np.squeeze(result))
 
         return result_index
