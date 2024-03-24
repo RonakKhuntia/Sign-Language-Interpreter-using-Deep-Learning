@@ -47,6 +47,13 @@ The system utilizes neural networks trained on extensive sign language datasets 
                     
 """)
 
+# Load an image from file
+image = open("hand-signs.jpg", "rb").read()
+
+# Display the image
+st.sidebar.image(image, caption='hand signs', use_column_width=True)
+
+
 def get_args():
     parser = argparse.ArgumentParser()
 
