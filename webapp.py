@@ -56,6 +56,7 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
     use_brect = True
 
     mp_hands = mp.solutions.hands
+
     hands = mp_hands.Hands(
         static_image_mode=use_static_image_mode,
         max_num_hands=2,
@@ -78,25 +79,24 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
         ]
 
     history_length = 16
+
     point_history = deque(maxlen=history_length)
 
     keypoint_classifier = KeyPointClassifier()
 
-    point_history_classifier = PointHistoryClassifier()
+    #point_history_classifier = PointHistoryClassifier()
     
-    finger_gesture_history = deque(maxlen=history_length)
+    #finger_gesture_history = deque(maxlen=history_length)
 
     mode = 0
 
-    number = 0
-
     debug_image = copy.deepcopy(image)
     
-    image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+    debug_image = cv.cvtColor(debug_image, cv.COLOR_BGR2RGB)
 
-    image.flags.writeable = False
-    results = hands.process(image)
-    image.flags.writeable = True
+    debug_image.flags.writeable = False
+    results = hands.process(debug_image)
+    debug_image.flags.writeable = True
 
     if results.multi_hand_landmarks is not None:
             for hand_landmarks, handedness in zip(results.multi_hand_landmarks,
@@ -111,9 +111,6 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
                     landmark_list)
                 pre_processed_point_history_list = pre_process_point_history(
                     debug_image, point_history)
-                # Write to the dataset file
-                logging_csv(number, mode, pre_processed_landmark_list,
-                            pre_processed_point_history_list)
 
                 # Hand sign classification
                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
@@ -122,17 +119,17 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
                 else:
                     point_history.append([0, 0])
 
-                # Finger gesture classification
-                finger_gesture_id = 0
-                point_history_len = len(pre_processed_point_history_list)
-                if point_history_len == (history_length * 2):
-                    finger_gesture_id = point_history_classifier(
-                        pre_processed_point_history_list)
+                # # Finger gesture classification
+                # finger_gesture_id = 0
+                # point_history_len = len(pre_processed_point_history_list)
+                # if point_history_len == (history_length * 2):
+                #     finger_gesture_id = point_history_classifier(
+                #         pre_processed_point_history_list)
 
-                # Calculates the gesture IDs in the latest detection
-                finger_gesture_history.append(finger_gesture_id)
-                most_common_fg_id = Counter(
-                    finger_gesture_history).most_common()
+                # # Calculates the gesture IDs in the latest detection
+                # finger_gesture_history.append(finger_gesture_id)
+                # most_common_fg_id = Counter(
+                #     finger_gesture_history).most_common()
 
                 # Drawing part
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
@@ -147,7 +144,8 @@ def callback(frame: av.VideoFrame) -> av.VideoFrame:
         point_history.append([0, 0])
 
     debug_image = draw_point_history(debug_image, point_history)
-    debug_image = draw_info(debug_image, mode, number)
+
+    debug_image = cv.cvtColor(debug_image, cv.COLOR_RGB2BGR)
 
     return av.VideoFrame.from_ndarray(debug_image, format="bgr24")
 
@@ -181,18 +179,6 @@ def get_args():
     args = parser.parse_args()
 
     return args
-
-def select_mode(key, mode):
-    number = -1
-    if 48 <= key <= 57:  # 0 ~ 9
-        number = key - 48
-    if key == 110:  # n
-        mode = 0
-    if key == 107:  # k
-        mode = 1
-    if key == 104:  # h
-        mode = 2
-    return number, mode
 
 
 def calc_bounding_rect(image, landmarks):
@@ -277,22 +263,6 @@ def pre_process_point_history(image, point_history):
         itertools.chain.from_iterable(temp_point_history))
 
     return temp_point_history
-
-
-def logging_csv(number, mode, landmark_list, point_history_list):
-    if mode == 0:
-        pass
-    if mode == 1 and (0 <= number <= 9):
-        csv_path = 'model/keypoint_classifier/keypoint.csv'
-        with open(csv_path, 'a', newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([number, *landmark_list])
-    if mode == 2 and (0 <= number <= 9):
-        csv_path = 'model/point_history_classifier/point_history.csv'
-        with open(csv_path, 'a', newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([number, *point_history_list])
-    return
 
 
 def draw_landmarks(image, landmark_point):
@@ -512,16 +482,4 @@ def draw_point_history(image, point_history):
 
     return image
 
-
-def draw_info(image, mode, number):
-    mode_string = ['Logging Key Point', 'Logging Point History']
-    if 1 <= mode <= 2:
-        cv.putText(image, "MODE:" + mode_string[mode - 1], (10, 90),
-                   cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1,
-                   cv.LINE_AA)
-        if 0 <= number <= 9:
-            cv.putText(image, "NUM:" + str(number), (10, 110),
-                       cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1,
-                       cv.LINE_AA)
-    return image
 
