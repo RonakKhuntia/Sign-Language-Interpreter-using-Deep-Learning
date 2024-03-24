@@ -41,6 +41,8 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 3.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, ILoveYou
 
+<img src="https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/blob/main/hand-signs.jpg" alt="Alt Text" width="500" height="500">
+
 <h2>Directory Structure</h2>
 
 <h3>app.py</h3>
