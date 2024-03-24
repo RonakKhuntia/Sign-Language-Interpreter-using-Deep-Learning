@@ -9,14 +9,12 @@ from collections import deque
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
 import av
 import tensorflow as tf
-
 import cv2 as cv
 import numpy as np
 import mediapipe as mp
+import streamlit as st
 
 st.title("Sign Language Interpreter")
-
-import streamlit as st
 
 # Sidebar
 st.sidebar.title("Sign Language Interpreter using Deep Learning I SDP-IH18 Project")
