@@ -31,15 +31,26 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 <h2>Instructions</h2>
 
-1.Open terminal and run the following command to install all dependencies
+1.Clone this repo
+
+2.Open terminal and go to the cloned repo directory
+
+3.Your system should have a python version between 3.8 - 3.11 to run all dependencies without any error.<br>
+In case you have a different version, uninstall it and install the one from link below.
+
+  Download python 3.11 from below link :
+
+    https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe
+
+2.In terminal, run the following command to install all dependencies
 
     pip install tensorflow opencv-python mediapipe scikit-learn matplotlib
 
-2.Run the following command to start detecting hand signs
+4.Run the following command to launch open-cv camera window to start detecting hand signs
 
     python app.py
 
-3.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, ILoveYou
+4.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, ILoveYou
 
 <img src="https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/blob/main/hand-signs.jpg" alt="Alt Text" width="500" height="500">
 
@@ -48,7 +59,7 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 <h3>app.py</h3>
 
 This is a sample program for inference.
-In addition, learning data (key points) for hand sign recognition,
+In addition, learning data (key points) for hand sign recognition,<br>
 You can also collect training data (index finger coordinate history) for finger gesture recognition.
 
 <h3>keypoint_classification.ipynb</h3>
