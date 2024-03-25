@@ -117,9 +117,7 @@ with open('model/keypoint_classifier/keypoint_classifier_label.csv',
         row[0] for row in keypoint_classifier_labels
     ]
 
-history_length = 16
-
-point_history = deque(maxlen=history_length)
+point_history = deque(maxlen=16)
 
 keypoint_classifier = load_model()
 
