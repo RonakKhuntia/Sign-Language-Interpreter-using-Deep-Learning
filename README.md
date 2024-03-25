@@ -46,7 +46,7 @@ In case you have a different version, uninstall it and install the one from link
 
     pip install tensorflow opencv-python mediapipe scikit-learn matplotlib
 
-4.Run the following command to launch open-cv camera window to start detecting hand signs
+3.Run the following command to launch open-cv camera window to start detecting hand signs
 
     python app.py
 
