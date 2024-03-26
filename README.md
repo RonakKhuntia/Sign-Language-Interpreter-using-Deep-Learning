@@ -58,9 +58,8 @@ In case you have a different version, uninstall it and install the one from link
 
 <h3>app.py</h3>
 
-This is a sample program for inference.
-In addition, learning data (key points) for hand sign recognition,<br>
-You can also collect training data (index finger coordinate history) for finger gesture recognition.
+This script contains code for recognizing hand signs.<br>
+In addition, you can also collect training data for hand sign recognition.
 
 <h3>keypoint_classification.ipynb</h3>
 
@@ -79,10 +78,10 @@ The following files are stored.
 
 <b>1.Learning data collection</b>
 
-Press "k" to enter the mode to save key points（displayed as 「MODE:Logging Key Point」）.
+Press "k" to enter the mode to save key points（displayed as 「MODE:Logging Key Point」）.<br>
 If you press "0" to "9", the key points will be added to "model/keypoint_classifier/keypoint.csv"
 
 <b>2.Model training</b>
 
-Open "keypoint_classification.ipynb" in Jupyter Notebook and execute from top to bottom.
-To change the number of training data classes, change the value of "NUM_CLASSES" and modify the label of  "model/keypoint_classifier/keypoint_classifier_label.csv" as appropriate.
+Open "keypoint_classification.ipynb" in Jupyter Notebook and execute from top to bottom.<br>
+To change the number of training data classes, change the value of "NUM_CLASSES" and<br> modify the label of  "model/keypoint_classifier/keypoint_classifier_label.csv" as appropriate.
