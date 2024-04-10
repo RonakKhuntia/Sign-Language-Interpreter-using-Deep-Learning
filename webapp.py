@@ -93,36 +93,66 @@ def get_args():
 
     return args
 
-args = get_args()
+def initialize_once():
 
-use_static_image_mode = args.use_static_image_mode
-min_detection_confidence = args.min_detection_confidence
-min_tracking_confidence = args.min_tracking_confidence
+    args = get_args()
 
-use_brect = True
+    tts = build_tts_engine()
 
-mp_hands = mp.solutions.hands
+    use_static_image_mode = args.use_static_image_mode
+    min_detection_confidence = args.min_detection_confidence
+    min_tracking_confidence = args.min_tracking_confidence
 
-hands = mp_hands.Hands(
-    static_image_mode=use_static_image_mode,
-    max_num_hands=2,
-    min_detection_confidence=min_detection_confidence,
-    min_tracking_confidence=min_tracking_confidence,
-)
+    use_brect = True
 
-with open('model/keypoint_classifier/keypoint_classifier_label.csv',
-            encoding='utf-8-sig') as f:
-    keypoint_classifier_labels = csv.reader(f)
-    keypoint_classifier_labels = [
-        row[0] for row in keypoint_classifier_labels
-    ]
+    mp_hands = mp.solutions.hands
 
-point_history = deque(maxlen=16)
+    hands = mp_hands.Hands(
+        static_image_mode=use_static_image_mode,
+        max_num_hands=2,
+        min_detection_confidence=min_detection_confidence,
+        min_tracking_confidence=min_tracking_confidence,
+    )
 
-keypoint_classifier = load_model()
+    with open('model/keypoint_classifier/keypoint_classifier_label.csv',
+                encoding='utf-8-sig') as f:
+        keypoint_classifier_labels = csv.reader(f)
+        keypoint_classifier_labels = [
+            row[0] for row in keypoint_classifier_labels
+        ]
+
+    point_history = deque(maxlen=16)
+
+    keypoint_classifier = load_model()
+
+    # Store the initialized components in session_state
+    st.session_state.initialized = True
+    st.session_state.args = args
+    st.session_state.use_static_image_mode = use_static_image_mode
+    st.session_state.min_detection_confidence = min_detection_confidence
+    st.session_state.min_tracking_confidence = min_tracking_confidence
+    st.session_state.use_brect = use_brect
+    st.session_state.mp_hands = mp_hands
+    st.session_state.hands = hands
+    st.session_state.keypoint_classifier_labels = keypoint_classifier_labels
+    st.session_state.point_history = point_history
+    st.session_state.keypoint_classifier = keypoint_classifier
+
+if 'initialized' not in st.session_state:
+    initialize_once()
+
+args = st.session_state.args
+use_static_image_mode = st.session_state.use_static_image_mode
+min_detection_confidence = st.session_state.min_detection_confidence
+min_tracking_confidence = st.session_state.min_tracking_confidence
+use_brect = st.session_state.use_brect
+mp_hands = st.session_state.mp_hands
+hands = st.session_state.hands
+keypoint_classifier_labels = st.session_state.keypoint_classifier_labels
+point_history = st.session_state.point_history
+keypoint_classifier = st.session_state.keypoint_classifier
 
 def callback(frame: av.VideoFrame) -> av.VideoFrame:
-
     image = frame.to_ndarray(format="bgr24")
 
     debug_image = copy.deepcopy(image)
