@@ -19,7 +19,7 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 <h2>Requirements</h2>
 
-- mediapipe(requires a python version between 3.8 - 3.11, not supported by other versions)
+- mediapipe (requires a python version between 3.8 - 3.11, not supported by other versions)
   
 - OpenCV
   
@@ -29,59 +29,30 @@ capture and interpret gestures accurately, ensuring a high level of precision in
   
 - matplotlib
 
+- pyttsx3
+
 <h2>Instructions</h2>
 
-1.Clone this repo
+1.Install Python 3.11 
 
-2.Open terminal and go to the cloned repo directory
-
-3.Your system should have a python version between 3.8 - 3.11 to run all dependencies without any error.<br>
-In case you have a different version, uninstall it and install the one from link below.
-
-  Download python 3.11 from below link :
+  Windows : 
 
     https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe
 
+  Other OS : 
+
+    https://www.python.org/downloads/release/python-3110/
+
 2.In terminal, run the following command to install all dependencies
 
-    pip install tensorflow opencv-python mediapipe scikit-learn matplotlib
+    pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3
 
 3.Run the following command to launch open-cv camera window to start detecting hand signs
 
     python app.py
 
-4.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, ILoveYou
+4.To use narration feature, press 's' on keyboard to enable it and press 'n' to disable it.
+
+4.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, I-Love-You
 
 <img src="https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/blob/main/hand-signs.jpg" alt="Alt Text" width="500" height="500">
-
-<h2>Directory Structure</h2>
-
-<h3>app.py</h3>
-
-This script contains code for recognizing hand signs.<br>
-In addition, you can also collect training data for hand sign recognition.
-
-<h3>keypoint_classification.ipynb</h3>
-
-This is a model training script for hand sign recognition.
-
-<h3>model/keypoint_classifier</h3>
-This directory stores files related to hand sign recognition.
-The following files are stored.
-
-- Training data(keypoint.csv)
-- Trained model(keypoint_classifier.tflite)
-- Label data(keypoint_classifier_label.csv)
-- Inference module(keypoint_classifier.py)
-
-<h2>Training</h2>
-
-<b>1.Learning data collection</b>
-
-Press "k" to enter the mode to save key points（displayed as 「MODE:Logging Key Point」）.<br>
-If you press "0" to "9", the key points will be added to "model/keypoint_classifier/keypoint.csv"
-
-<b>2.Model training</b>
-
-Open "keypoint_classification.ipynb" in Jupyter Notebook and execute from top to bottom.<br>
-To change the number of training data classes, change the value of "NUM_CLASSES" and<br> modify the label of  "model/keypoint_classifier/keypoint_classifier_label.csv" as appropriate.
