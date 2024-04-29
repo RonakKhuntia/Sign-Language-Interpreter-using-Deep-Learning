@@ -33,13 +33,7 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 <h2>Instructions</h2>
 
-1.Install Python 3.11 
-
-  Windows : 
-
-    https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe
-
-  Other OS : 
+1.Install Python for your OS from the link below
 
     https://www.python.org/downloads/release/python-3110/
 
