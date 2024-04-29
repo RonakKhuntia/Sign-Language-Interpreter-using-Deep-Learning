@@ -47,7 +47,7 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 4.To use narration feature, press 's' on keyboard to enable it and press 'n' to disable it.
 
-4.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, I-Love-You
+5.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, I-Love-You
 
 <br>
 <p align="center">
