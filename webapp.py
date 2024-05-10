@@ -97,8 +97,6 @@ def initialize_once():
 
     args = get_args()
 
-    tts = build_tts_engine()
-
     use_static_image_mode = args.use_static_image_mode
     min_detection_confidence = args.min_detection_confidence
     min_tracking_confidence = args.min_tracking_confidence
