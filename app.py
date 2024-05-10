@@ -148,22 +148,25 @@ def main():
                 else:
                     point_history.append([0, 0])
 
+                 # Drawing part
+                debug_image = draw_bounding_rect(use_brect, debug_image, brect)
+                debug_image = draw_landmarks(debug_image, landmark_list)
+                hand_sign_text = keypoint_classifier_labels[hand_sign_id]
+                debug_image = draw_info_text(
+                    debug_image,
+                    brect,
+                    handedness,
+                    hand_sign_text
+                )
+
+                #Narration
                 if(np.unique(predictions[-30:])[0] == hand_sign_id):
-                # Drawing part
-                    debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-                    debug_image = draw_landmarks(debug_image, landmark_list)
-                    hand_sign_text = keypoint_classifier_labels[hand_sign_id]
                     if mode == 2:
                         if(first_run or last_spoken_word != hand_sign_text):
                             last_spoken_word = hand_sign_text
                             threading.Thread(target=text_to_speech, args=(tts, hand_sign_text, engine_lock)).start()
                             first_run = False
-                    debug_image = draw_info_text(
-                        debug_image,
-                        brect,
-                        handedness,
-                        hand_sign_text
-                    )
+                            
         else:
             point_history.append([0, 0])
 
