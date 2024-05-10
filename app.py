@@ -143,7 +143,7 @@ def main():
                 predictions.append(hand_sign_id)
 
 
-                if hand_sign_id == 2:  # Point gesture
+                if hand_sign_id == 'NOT APPLICABLE':  # Point gesture
                     point_history.append(landmark_list[8])
                 else:
                     point_history.append([0, 0])
