@@ -43,7 +43,7 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 3.Run the following command to launch open-cv camera window to start detecting hand signs
 
-    python app_gui.py
+    python app.py
 
 4.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, I-Love-You
 
