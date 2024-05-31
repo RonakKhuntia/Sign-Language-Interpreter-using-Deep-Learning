@@ -17,6 +17,20 @@ into text, facilitating seamless interaction for the deaf and hard-of-hearing co
 intricate movements and expressions inherent in sign language. Computer vision techniques are employed to 
 capture and interpret gestures accurately, ensuring a high level of precision in the translation process. 
 
+
+
+
+
+https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/assets/66641606/c71de96f-6bcc-47a3-af1d-a085f39684f6
+
+
+
+
+
+
+
+
+
 <h2>Requirements</h2>
 
 - mediapipe (requires a python version between 3.8 - 3.11, not supported by other versions)
@@ -29,23 +43,19 @@ capture and interpret gestures accurately, ensuring a high level of precision in
   
 - matplotlib
 
+- numpy
+
 - pyttsx3
 
 <h2>Instructions</h2>
 
-1.Install Python for your OS from the link below
+1.After cloning this repo, run the following command to install all dependencies
 
-    https://www.python.org/downloads/release/python-3110/
+    pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3 numpy
 
-2.In terminal, run the following command to install all dependencies
-
-    pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3
-
-3.Run the following command to launch open-cv camera window to start detecting hand signs
+2.Run the following command to launch open-cv camera window to start detecting hand signs
 
     python app.py
-
-4.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, I-Love-You
 
 <br>
 <p align="center">
