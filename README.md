@@ -53,5 +53,5 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 
 <br>
 <p align="center">
-<img src="https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/blob/main/hand_signs.jpg" alt="hand signs" height="503" width="400">
+<img src="https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/blob/main/hand_signs.png" alt="hand signs" height="503" width="400">
 </p>
