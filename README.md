@@ -33,7 +33,7 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 
 <h2>Requirements</h2>
 
-- mediapipe (requires a python version between 3.8 - 3.11, not supported by other versions)
+- mediapipe (requires a python version between 3.8 - 3.11)
   
 - OpenCV
 
