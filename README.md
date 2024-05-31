@@ -35,19 +35,13 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 <h2>Instructions</h2>
 
-1.Install Python for your OS from the link below
-
-    https://www.python.org/downloads/release/python-3110/
-
-2.In terminal, run the following command to install all dependencies
+1.In terminal, run the following command to install all dependencies
 
     pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3 numpy
 
-3.Run the following command to launch open-cv camera window to start detecting hand signs
+2.Run the following command to launch open-cv camera window to start detecting hand signs
 
     python app.py
-
-4.The current model is able to predict 8 hand signs - Hello, Yes, No, Dislike, Like, Ok, Peace, I-Love-You
 
 <br>
 <p align="center">
