@@ -36,12 +36,6 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 - mediapipe (requires a python version between 3.8 - 3.11, not supported by other versions)
   
 - OpenCV
-  
-- Tensorflow
-  
-- scikit-learn
-  
-- matplotlib
 
 - numpy
 
@@ -53,7 +47,7 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 
     pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3 numpy
 
-2.Run the following command to launch open-cv camera window to start detecting hand signs
+2.Run the following command to launch the application
 
     python app.py
 
