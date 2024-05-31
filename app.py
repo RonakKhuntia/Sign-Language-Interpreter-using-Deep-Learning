@@ -13,6 +13,7 @@ ddd=enchant.Dict("en-US")
 hd = HandDetector(maxHands=1)
 hd2 = HandDetector(maxHands=1)
 import tkinter as tk
+import threading
 from PIL import Image, ImageTk
 
 offset=29
@@ -28,6 +29,7 @@ class Application:
         self.current_image = None
         self.model = load_model('sign_language_model.h5')
         self.speak_engine=pyttsx3.init()
+        self.engine_lock = threading.Lock()
         self.speak_engine.setProperty("rate",100)
         voices=self.speak_engine.getProperty("voices")
         self.speak_engine.setProperty("voice",voices[0].id)
@@ -223,8 +225,13 @@ class Application:
 
 
     def speak_fun(self):
-        self.speak_engine.say(self.str)
-        self.speak_engine.runAndWait()
+        speaking_thread = threading.Thread(target=self.speak_text)
+        speaking_thread.start()
+
+    def speak_text(self):
+        with self.engine_lock:
+            self.speak_engine.say(self.str)
+            self.speak_engine.runAndWait()
 
 
     def clear_fun(self):
