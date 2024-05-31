@@ -5,8 +5,6 @@ import copy
 import argparse
 import itertools
 from collections import deque
-import pyttsx3
-import threading
 import cv2 as cv
 import numpy as np
 import mediapipe as mp
@@ -34,19 +32,9 @@ def get_args():
 
     return args
 
-def build_tts_engine():
-    engine = pyttsx3.init()
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[0].id)
-    engine.setProperty('rate', 150)
-    engine.setProperty('volume', 1.0)
-    return engine
-
 def main():
     # Argument parsing #################################################################
     args = get_args()
-    
-    tts = build_tts_engine()
 
     cap_device = args.device
     cap_width = args.width
@@ -87,14 +75,6 @@ def main():
 
     #  ########################################################################
     mode = 0
-
-    predictions = []
-
-    last_spoken_word = "Hello"
-
-    first_run = True
-
-    engine_lock = threading.Lock()
 
     while True:
 
@@ -140,15 +120,8 @@ def main():
 
                 # Hand sign classification
                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
-                predictions.append(hand_sign_id)
 
-
-                if hand_sign_id == 'NOT APPLICABLE':  # Point gesture
-                    point_history.append(landmark_list[8])
-                else:
-                    point_history.append([0, 0])
-
-                 # Drawing part
+                # Drawing part
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
                 debug_image = draw_landmarks(debug_image, landmark_list)
                 hand_sign_text = keypoint_classifier_labels[hand_sign_id]
@@ -158,14 +131,6 @@ def main():
                     handedness,
                     hand_sign_text
                 )
-
-                #Narration
-                if(np.unique(predictions[-30:])[0] == hand_sign_id):
-                    if mode == 2:
-                        if(first_run or last_spoken_word != hand_sign_text):
-                            last_spoken_word = hand_sign_text
-                            threading.Thread(target=text_to_speech, args=(tts, hand_sign_text, engine_lock)).start()
-                            first_run = False
                             
         else:
             point_history.append([0, 0])
@@ -188,8 +153,6 @@ def select_mode(key, mode):
         mode = 0
     if key == 107:  # k
         mode = 1
-    if key == 115: # s
-        mode = 2
     return number, mode
 
 
@@ -519,11 +482,6 @@ def draw_info(image, mode, number):
                    cv.FONT_HERSHEY_SIMPLEX, 0.6, 
                    (255, 255, 255), 1, cv.LINE_AA)
     return image
-
-def text_to_speech(engine,text,lock):
-    with lock:
-        engine.say(text)
-        engine.runAndWait()
 
 if __name__ == '__main__':
     main()
