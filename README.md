@@ -49,5 +49,5 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 <br>
 <p align="center">
-<img src="https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/blob/main/hand_signs.jpg" alt="Alt Text" width="400" height="400">
+<img src="https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/blob/main/hand_signs.png" alt="Alt Text" width="400" height="400">
 </p>
