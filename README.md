@@ -17,6 +17,20 @@ into text, facilitating seamless interaction for the deaf and hard-of-hearing co
 intricate movements and expressions inherent in sign language. Computer vision techniques are employed to 
 capture and interpret gestures accurately, ensuring a high level of precision in the translation process. 
 
+
+
+
+
+https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/assets/66641606/c71de96f-6bcc-47a3-af1d-a085f39684f6
+
+
+
+
+
+
+
+
+
 <h2>Requirements</h2>
 
 - mediapipe (requires a python version between 3.8 - 3.11, not supported by other versions)
