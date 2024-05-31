@@ -35,7 +35,7 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 <h2>Instructions</h2>
 
-1.In terminal, run the following command to install all dependencies
+1.After cloning this repo, run the following command to install all dependencies
 
     pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3 numpy
 
