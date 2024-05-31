@@ -29,6 +29,8 @@ capture and interpret gestures accurately, ensuring a high level of precision in
   
 - matplotlib
 
+- numpy
+
 - pyttsx3
 
 <h2>Instructions</h2>
@@ -39,7 +41,7 @@ capture and interpret gestures accurately, ensuring a high level of precision in
 
 2.In terminal, run the following command to install all dependencies
 
-    pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3
+    pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3 numpy
 
 3.Run the following command to launch open-cv camera window to start detecting hand signs
 
