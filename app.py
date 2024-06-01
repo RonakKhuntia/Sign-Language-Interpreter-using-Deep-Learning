@@ -560,9 +560,6 @@ class Application:
             if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] > self.pts[20][1]):
                 ch1=" "
 
-
-
-        print(self.pts[4][0] < self.pts[5][0])
         if ch1 == 'E' or ch1=='Y' or ch1=='B':
             if (self.pts[4][0] < self.pts[5][0]) and (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and self.pts[18][1] > self.pts[20][1]):
                 ch1="next"
@@ -571,7 +568,6 @@ class Application:
         if ch1 == 'Next' or 'B' or 'C' or 'H' or 'F' or 'X':
             if (self.pts[0][0] > self.pts[8][0] and self.pts[0][0] > self.pts[12][0] and self.pts[0][0] > self.pts[16][0] and self.pts[0][0] > self.pts[20][0]) and (self.pts[4][1] < self.pts[8][1] and self.pts[4][1] < self.pts[12][1] and self.pts[4][1] < self.pts[16][1] and self.pts[4][1] < self.pts[20][1]) and (self.pts[4][1] < self.pts[6][1] and self.pts[4][1] < self.pts[10][1] and self.pts[4][1] < self.pts[14][1] and self.pts[4][1] < self.pts[18][1]):
                 ch1 = 'Backspace'
-
 
         if ch1=="next" and self.prev_char!="next":
             if self.ten_prev_char[(self.count-2)%10]!="next":
@@ -583,7 +579,6 @@ class Application:
             else:
                 if self.ten_prev_char[(self.count - 0) % 10] != "Backspace":
                     self.str = self.str + self.ten_prev_char[(self.count - 0) % 10]
-
 
         if ch1=="  " and self.prev_char!="  ":
             self.str = self.str + "  "
