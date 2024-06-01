@@ -33,7 +33,7 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 
 <h2>Requirements</h2>
   
-- OpenCV
+- open-cv
 
 - numpy
 
