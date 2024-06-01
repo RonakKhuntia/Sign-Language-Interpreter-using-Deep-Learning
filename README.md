@@ -43,7 +43,7 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 
 1.After cloning this repo, run the following command to install all dependencies
 
-    pip install tensorflow opencv-python mediapipe scikit-learn matplotlib pyttsx3 numpy
+    pip install opencv-python pyttsx3 numpy
 
 2.Run the following command to launch the application
 
