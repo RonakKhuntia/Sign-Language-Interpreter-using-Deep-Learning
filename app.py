@@ -107,7 +107,7 @@ class Application:
                 x, y, w, h = hand[0]['bbox'] #extract hand bounding box coordinates
                 image = cv2image_copy[y - offset:y + h + offset, x - offset:x + w + offset] #crop image as per panel dimensions
 
-                white = cv2.imread("white.jpg")
+                placeholder = cv2.imread("placeholder.jpg")
 
                 handz = hd2.findHands(image, draw=False, flipType=True)
                 if handz[0]:
@@ -118,36 +118,36 @@ class Application:
                     os = ((400 - w) // 2) - 15
                     os1 = ((400 - h) // 2) - 15
                     for t in range(0, 4, 1):
-                        cv2.line(white, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
+                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
                                     (0, 255, 0), 3)
                     for t in range(5, 8, 1):
-                        cv2.line(white, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
+                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
                                     (0, 255, 0), 3)
                     for t in range(9, 12, 1):
-                        cv2.line(white, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
+                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
                                     (0, 255, 0), 3)
                     for t in range(13, 16, 1):
-                        cv2.line(white, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
+                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
                                     (0, 255, 0), 3)
                     for t in range(17, 20, 1):
-                        cv2.line(white, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
+                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
                                     (0, 255, 0), 3)
-                    cv2.line(white, (self.pts[5][0] + os, self.pts[5][1] + os1), (self.pts[9][0] + os, self.pts[9][1] + os1), (0, 255, 0),
+                    cv2.line(placeholder, (self.pts[5][0] + os, self.pts[5][1] + os1), (self.pts[9][0] + os, self.pts[9][1] + os1), (0, 255, 0),
                                 3)
-                    cv2.line(white, (self.pts[9][0] + os, self.pts[9][1] + os1), (self.pts[13][0] + os, self.pts[13][1] + os1), (0, 255, 0),
+                    cv2.line(placeholder, (self.pts[9][0] + os, self.pts[9][1] + os1), (self.pts[13][0] + os, self.pts[13][1] + os1), (0, 255, 0),
                                 3)
-                    cv2.line(white, (self.pts[13][0] + os, self.pts[13][1] + os1), (self.pts[17][0] + os, self.pts[17][1] + os1),
+                    cv2.line(placeholder, (self.pts[13][0] + os, self.pts[13][1] + os1), (self.pts[17][0] + os, self.pts[17][1] + os1),
                                 (0, 255, 0), 3)
-                    cv2.line(white, (self.pts[0][0] + os, self.pts[0][1] + os1), (self.pts[5][0] + os, self.pts[5][1] + os1), (0, 255, 0),
+                    cv2.line(placeholder, (self.pts[0][0] + os, self.pts[0][1] + os1), (self.pts[5][0] + os, self.pts[5][1] + os1), (0, 255, 0),
                                 3)
-                    cv2.line(white, (self.pts[0][0] + os, self.pts[0][1] + os1), (self.pts[17][0] + os, self.pts[17][1] + os1), (0, 255, 0),
+                    cv2.line(placeholder, (self.pts[0][0] + os, self.pts[0][1] + os1), (self.pts[17][0] + os, self.pts[17][1] + os1), (0, 255, 0),
                                 3)
 
                     #draw circle around each keypoint
                     for i in range(21):
-                        cv2.circle(white, (self.pts[i][0] + os, self.pts[i][1] + os1), 2, (0, 0, 255), 1)
+                        cv2.circle(placeholder, (self.pts[i][0] + os, self.pts[i][1] + os1), 2, (0, 0, 255), 1)
 
-                    res=white
+                    res=placeholder
                     self.predict(res)
 
                     #set panel2 to predicted result image
@@ -182,9 +182,9 @@ class Application:
         self.str=" "
 
     def predict(self, test_image):
-        white=test_image
-        white = white.reshape(1, 400, 400, 3)
-        prob = np.array(self.model.predict(white)[0], dtype='float32')
+        placeholder=test_image
+        placeholder = placeholder.reshape(1, 400, 400, 3)
+        prob = np.array(self.model.predict(placeholder)[0], dtype='float32')
         ch1 = np.argmax(prob, axis=0)
         prob[ch1] = 0
         ch2 = np.argmax(prob, axis=0)
