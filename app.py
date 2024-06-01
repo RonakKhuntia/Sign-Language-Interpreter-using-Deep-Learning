@@ -43,13 +43,14 @@ class Application:
         self.root.state('zoomed')
         self.root.geometry("1300x700")
 
-        self.panel = tk.Label(self.root) #OpenCV panel
+        self.panel = tk.Label(self.root) #OpenCV display panel
         self.panel.place(x=100, y=3, width=480, height=640)
 
-        self.panel2 = tk.Label(self.root)  # mediapipe panel
-        self.panel2.place(x=700, y=115, width=400, height=400)
+        self.hand_signs_image = "hand_signs.jpg"
+        self.load_image()
+        self.panel2 = tk.Label(self.root, image=self.img)
+        self.panel2.place(x=700, y=70, width=500, height=500)
         
-
         self.T = tk.Label(self.root)
         self.T.place(x=60, y=5)
         self.T.config(text="Sign Language Interpreter", font=("Courier", 30, "bold"))
@@ -80,6 +81,17 @@ class Application:
         self.current_symbol = ""  #Current Symbol variable
 
         self.video_loop()
+
+    def load_image(self):
+        # Open the image file
+        img = Image.open(self.hand_signs_image)
+        
+        # Resize the image to fit the label size (optional)
+        img = img.resize((400, 505), Image.Resampling.LANCZOS)
+        
+        # Convert the image to a Tkinter-compatible format
+        self.img = ImageTk.PhotoImage(img)
+
 
     def video_loop(self):
         try:
@@ -140,14 +152,6 @@ class Application:
 
                     res=placeholder
                     self.predict(res)
-
-                    #set panel2 to predicted result image
-                    self.current_image2 = Image.fromarray(res)
-
-                    imgtk = ImageTk.PhotoImage(image=self.current_image2)
-
-                    self.panel2.imgtk = imgtk
-                    self.panel2.config(image=imgtk)
 
                     self.panel3.config(text=self.current_symbol, font=("Courier", 30)) #Current Symbol
 
