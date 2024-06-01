@@ -102,7 +102,7 @@ class Application:
             self.panel.imgtk = imgtk
             self.panel.config(image=imgtk)
 
-            if hands:
+            if hands[0]:
                 hand = hands[0]
                 x, y, w, h = hand[0]['bbox'] #extract hand bounding box coordinates
                 image = cv2image_copy[y - offset:y + h + offset, x - offset:x + w + offset] #crop image as per panel dimensions
@@ -110,7 +110,7 @@ class Application:
                 white = cv2.imread("white.jpg")
 
                 handz = hd2.findHands(image, draw=False, flipType=True)
-                if handz:
+                if handz[0]:
                     hand = handz[0]
                     self.pts = hand[0]['lmList'] #extract hand landmark list
 
