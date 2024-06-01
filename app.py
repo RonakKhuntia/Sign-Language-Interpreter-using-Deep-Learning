@@ -29,20 +29,11 @@ class Application:
         voices=self.speak_engine.getProperty("voices")
         self.speak_engine.setProperty("voice",voices[0].id)
 
-        self.ct = {}
-        self.ct['blank'] = 0
-        self.blank_flag = 0
-        self.space_flag=False
-        self.next_flag=True
         self.prev_char=""
         self.count=-1
         self.ten_prev_char=[]
         for i in range(10):
              self.ten_prev_char.append(" ")
-
-
-        for i in ascii_uppercase:
-            self.ct[i] = 0
 
         print("Loaded model from disk")
 
