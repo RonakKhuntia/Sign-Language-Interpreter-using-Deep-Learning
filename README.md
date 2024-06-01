@@ -1,4 +1,4 @@
-<h1>Sing Language Interpreter using Deep Learning I SDP-IH18 Project</h1>
+<h1>Sign Language Interpreter using Deep Learning I SDP-IH18 Project</h1>
 
 <h2>Contributors</h2>
 
@@ -12,7 +12,7 @@
 
 <h2>About</h2>
 
-<b>" Sing Language Interpreter using Deep Learning "</b> is a part of our B.Tech Final Year SDP Project.The primary objective is to develop an accurate and efficient system capable of translating sign language gestures 
+<b>" Sign Language Interpreter using Deep Learning "</b> is a part of our B.Tech Final Year SDP Project.The primary objective is to develop an accurate and efficient system capable of translating sign language gestures 
 into text and audio, facilitating seamless interaction for the deaf and hard-of-hearing community. The system utilizes neural networks trained on extensive sign language datasets to recognize the 
 intricate movements and expressions inherent in sign language. Computer vision techniques are employed to 
 capture and interpret gestures accurately, ensuring a high level of precision in the translation process. 
