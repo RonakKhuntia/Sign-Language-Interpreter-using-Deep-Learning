@@ -9,6 +9,7 @@ from cvzone.HandTrackingModule import HandDetector
 import tkinter as tk
 import threading
 from PIL import Image, ImageTk
+
 hd = HandDetector(maxHands=1)
 hd2 = HandDetector(maxHands=1)
 
