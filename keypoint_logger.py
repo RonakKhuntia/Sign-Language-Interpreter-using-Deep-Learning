@@ -22,7 +22,7 @@ curr_dir = c_dir[dir_index]
 offset = 15
 step = 1
 flag=False
-suv=0
+ic=0
 
 placeholder=np.ones((400,400),np.uint8)*255
 cv2.imwrite("placeholder.jpg",placeholder)
@@ -105,11 +105,11 @@ while True:
             if flag:
                 flag=False
             else:
-                suv=0
+                ic=0
                 flag=True
 
         if flag==True:
-            if suv==180:
+            if ic==180:
                 flag=False
             if step%3==0:
                 cv2.imwrite("data/images/" + (curr_dir) + "/" + str(count) + ".jpg",
@@ -121,7 +121,7 @@ while True:
                 row = [label] + pixel_values.tolist()
                 writer.writerow(row)
                 count += 1
-                suv += 1
+                ic += 1
             step+=1
 
     except Exception:
