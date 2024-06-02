@@ -71,7 +71,7 @@ while True:
 
         skeleton1=np.array(placeholder)
 
-        cv2.imshow("skeleton1",skeleton1)
+        cv2.imshow("hand",skeleton1)
 
         frame = cv2.putText(frame, "dir=" + curr_dir + "  count=" + str(count), (50,50),
                             cv2.FONT_HERSHEY_SIMPLEX,
