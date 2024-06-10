@@ -32,7 +32,6 @@ class Application:
         self.prev_char=""
         self.count=-1
         self.ten_prev_char=[]
-        self.acc = 0
         for i in range(10):
              self.ten_prev_char.append(" ")
 
@@ -87,6 +86,7 @@ class Application:
 
         self.str = " " #Sentence variable
         self.current_symbol = ""  #Current Symbol variable
+        self.acc = 0 #Accuracy Variable
 
         self.video_loop()
 
