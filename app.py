@@ -6,14 +6,14 @@ import traceback
 import pyttsx3
 from keras.models import load_model
 from cvzone.HandTrackingModule import HandDetector
+from env.cvzone.HandProcessing import process_hands
+from env.keras.model.labels import process_label
 import tkinter as tk
 import threading
 from PIL import Image, ImageTk
 
 hd = HandDetector(maxHands=1)
 hd2 = HandDetector(maxHands=1)
-
-offset=29
 
 os.environ["THEANO_FLAGS"] = "device=cuda, assert_no_cpu_op=True"
 
@@ -28,7 +28,7 @@ class Application:
         self.speak_engine.setProperty("rate",130)
         voices=self.speak_engine.getProperty("voices")
         self.speak_engine.setProperty("voice",voices[0].id)
-
+        
         self.prev_char=""
         self.count=-1
         self.ten_prev_char=[]
@@ -84,6 +84,10 @@ class Application:
         self.clear.place(x=1205, y=630)
         self.clear.config(text="Clear", font=("Courier", 20), wraplength=100, command=self.clear_fun)
 
+        self.delete = tk.Button(self.root)
+        self.delete.place(x=1205, y=700)
+        self.delete.config(text="Delete", font=("Courier", 20), wraplength=100, command=self.backspace)
+
         self.str = " " #Sentence variable
         self.current_symbol = ""  #Current Symbol variable
         self.acc = 0 #Accuracy Variable
@@ -110,53 +114,13 @@ class Application:
 
             if hands[0]:
                 hand = hands[0]
-                x, y, w, h = hand[0]['bbox'] #extract hand bounding box coordinates
-                image = cv2image_copy[y - offset:y + h + offset, x - offset:x + w + offset] #crop image as per panel dimensions
+                self.pts, roi = process_hands(cv2image_copy,hand[0]['bbox'])
+                prediction = np.array(self.model.predict(roi), dtype='float32')
+                self.acc = "{:.2f}".format(np.max(prediction)*100)
+                pred_char = process_label(prediction, self.pts)
+                self.gest(pred_char)
 
-                placeholder = cv2.imread("placeholder.jpg")
-
-                handz = hd2.findHands(image, draw=False, flipType=True)
-                if handz[0]:
-                    hand = handz[0]
-                    self.pts = hand[0]['lmList'] #extract hand landmark list
-
-                    #draw lines connecting each hand keypoint
-                    os = ((400 - w) // 2) - 15
-                    os1 = ((400 - h) // 2) - 15
-                    for t in range(0, 4, 1):
-                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
-                                    (0, 255, 0), 3)
-                    for t in range(5, 8, 1):
-                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
-                                    (0, 255, 0), 3)
-                    for t in range(9, 12, 1):
-                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
-                                    (0, 255, 0), 3)
-                    for t in range(13, 16, 1):
-                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
-                                    (0, 255, 0), 3)
-                    for t in range(17, 20, 1):
-                        cv2.line(placeholder, (self.pts[t][0] + os, self.pts[t][1] + os1), (self.pts[t + 1][0] + os, self.pts[t + 1][1] + os1),
-                                    (0, 255, 0), 3)
-                    cv2.line(placeholder, (self.pts[5][0] + os, self.pts[5][1] + os1), (self.pts[9][0] + os, self.pts[9][1] + os1), (0, 255, 0),
-                                3)
-                    cv2.line(placeholder, (self.pts[9][0] + os, self.pts[9][1] + os1), (self.pts[13][0] + os, self.pts[13][1] + os1), (0, 255, 0),
-                                3)
-                    cv2.line(placeholder, (self.pts[13][0] + os, self.pts[13][1] + os1), (self.pts[17][0] + os, self.pts[17][1] + os1),
-                                (0, 255, 0), 3)
-                    cv2.line(placeholder, (self.pts[0][0] + os, self.pts[0][1] + os1), (self.pts[5][0] + os, self.pts[5][1] + os1), (0, 255, 0),
-                                3)
-                    cv2.line(placeholder, (self.pts[0][0] + os, self.pts[0][1] + os1), (self.pts[17][0] + os, self.pts[17][1] + os1), (0, 255, 0),
-                                3)
-
-                    #draw circle around each keypoint
-                    for i in range(21):
-                        cv2.circle(placeholder, (self.pts[i][0] + os, self.pts[i][1] + os1), 2, (0, 0, 255), 1)
-
-                    res=placeholder
-                    self.predict(res)
-
-                    self.panel3.config(text=self.current_symbol, font=("Courier", 30)) #Current Symbol
+                self.panel3.config(text=self.current_symbol, font=("Courier", 30)) #Current Symbol
 
             self.panel5.config(text=self.str, font=("Courier", 30), wraplength=1025) #Sentence
 
@@ -165,9 +129,6 @@ class Application:
             print("==", traceback.format_exc())
         finally:
             self.root.after(1, self.video_loop)
-
-    def distance(self,x,y):
-        return math.sqrt(((x[0] - y[0]) ** 2) + ((x[1] - y[1]) ** 2))
 
     def speak_fun(self):
         speaking_thread = threading.Thread(target=self.speak_text)
@@ -181,414 +142,31 @@ class Application:
     def clear_fun(self):
         self.str=" "
 
-    def predict(self, test_image):
-        placeholder=test_image
-        placeholder = placeholder.reshape(1, 400, 400, 3)
-        pred = np.array(self.model.predict(placeholder), dtype='float32')
-        prob = pred[0]
-        self.acc = "{:.2f}".format(np.max(pred)*100)
-        ch1 = np.argmax(prob, axis=0)
-        prob[ch1] = 0
-        ch2 = np.argmax(prob, axis=0)
-        prob[ch2] = 0
-        ch3 = np.argmax(prob, axis=0)
-        prob[ch3] = 0
+    def backspace(self):
+        self.str=self.str[0:-1]
 
-        pl = [ch1, ch2]
+    def distance(self,x,y):
+        return math.sqrt(((x[0] - y[0]) ** 2) + ((x[1] - y[1]) ** 2))
 
-        # condition for [Aemnst]
-        l = [[5, 2], [5, 3], [3, 5], [3, 6], [3, 0], [3, 2], [6, 4], [6, 1], [6, 2], [6, 6], [6, 7], [6, 0], [6, 5],
-             [4, 1], [1, 0], [1, 1], [6, 3], [1, 6], [5, 6], [5, 1], [4, 5], [1, 4], [1, 5], [2, 0], [2, 6], [4, 6],
-             [1, 0], [5, 7], [1, 6], [6, 1], [7, 6], [2, 5], [7, 1], [5, 4], [7, 0], [7, 5], [7, 2]]
-        if pl in l:
-            if (self.pts[6][1] < self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] < self.pts[20][
-                1]):
-                ch1 = 0
-
-        # condition for [o][s]
-        l = [[2, 2], [2, 1]]
-        if pl in l:
-            if (self.pts[5][0] < self.pts[4][0]):
-                ch1 = 0
-
-        # condition for [c0][aemnst]
-        l = [[0, 0], [0, 6], [0, 2], [0, 5], [0, 1], [0, 7], [5, 2], [7, 6], [7, 1]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[0][0] > self.pts[8][0] and self.pts[0][0] > self.pts[4][0] and self.pts[0][0] > self.pts[12][0] and self.pts[0][0] > self.pts[16][
-                0] and self.pts[0][0] > self.pts[20][0]) and self.pts[5][0] > self.pts[4][0]:
-                ch1 = 2
-
-        # condition for [c0][aemnst]
-        l = [[6, 0], [6, 6], [6, 2]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.distance(self.pts[8], self.pts[16]) < 52:
-                ch1 = 2
-
-
-        # condition for [gh][bdfikruvw]
-        l = [[1, 4], [1, 5], [1, 6], [1, 3], [1, 0]]
-        pl = [ch1, ch2]
-
-        if pl in l:
-            if self.pts[6][1] > self.pts[8][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] < self.pts[20][1] and self.pts[0][0] < self.pts[8][
-                0] and self.pts[0][0] < self.pts[12][0] and self.pts[0][0] < self.pts[16][0] and self.pts[0][0] < self.pts[20][0]:
-                ch1 = 3
-
-
-
-        # con for [gh][l]
-        l = [[4, 6], [4, 1], [4, 5], [4, 3], [4, 7]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[4][0] > self.pts[0][0]:
-                ch1 = 3
-
-        # con for [gh][pqz]
-        l = [[5, 3], [5, 0], [5, 7], [5, 4], [5, 2], [5, 1], [5, 5]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[2][1] + 15 < self.pts[16][1]:
-                ch1 = 3
-
-        # con for [l][x]
-        l = [[6, 4], [6, 1], [6, 2]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.distance(self.pts[4], self.pts[11]) > 55:
-                ch1 = 4
-
-        # con for [l][d]
-        l = [[1, 4], [1, 6], [1, 1]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.distance(self.pts[4], self.pts[11]) > 50) and (
-                    self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] <
-                    self.pts[20][1]):
-                ch1 = 4
-
-        # con for [l][gh]
-        l = [[3, 6], [3, 4]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[4][0] < self.pts[0][0]):
-                ch1 = 4
-
-        # con for [l][c0]
-        l = [[2, 2], [2, 5], [2, 4]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[1][0] < self.pts[12][0]):
-                ch1 = 4
-
-        # con for [l][c0]
-        l = [[2, 2], [2, 5], [2, 4]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[1][0] < self.pts[12][0]):
-                ch1 = 4
-
-        # con for [gh][z]
-        l = [[3, 6], [3, 5], [3, 4]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] < self.pts[20][
-                1]) and self.pts[4][1] > self.pts[10][1]:
-                ch1 = 5
-
-        # con for [gh][pq]
-        l = [[3, 2], [3, 1], [3, 6]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[4][1] + 17 > self.pts[8][1] and self.pts[4][1] + 17 > self.pts[12][1] and self.pts[4][1] + 17 > self.pts[16][1] and self.pts[4][
-                1] + 17 > self.pts[20][1]:
-                ch1 = 5
-
-        # con for [l][pqz]
-        l = [[4, 4], [4, 5], [4, 2], [7, 5], [7, 6], [7, 0]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[4][0] > self.pts[0][0]:
-                ch1 = 5
-
-        # con for [pqz][aemnst]
-        l = [[0, 2], [0, 6], [0, 1], [0, 5], [0, 0], [0, 7], [0, 4], [0, 3], [2, 7]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[0][0] < self.pts[8][0] and self.pts[0][0] < self.pts[12][0] and self.pts[0][0] < self.pts[16][0] and self.pts[0][0] < self.pts[20][0]:
-                ch1 = 5
-
-        # con for [pqz][yj]
-        l = [[5, 7], [5, 2], [5, 6]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[3][0] < self.pts[0][0]:
-                ch1 = 7
-
-        # con for [l][yj]
-        l = [[4, 6], [4, 2], [4, 4], [4, 1], [4, 5], [4, 7]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[6][1] < self.pts[8][1]:
-                ch1 = 7
-
-        # con for [x][yj]
-        l = [[6, 7], [0, 7], [0, 1], [0, 0], [6, 4], [6, 6], [6, 5], [6, 1]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[18][1] > self.pts[20][1]:
-                ch1 = 7
-
-        # condition for [x][aemnst]
-        l = [[0, 4], [0, 2], [0, 3], [0, 1], [0, 6]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[5][0] > self.pts[16][0]:
-                ch1 = 6
-
-
-        # condition for [yj][x]
-        l = [[7, 2]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[18][1] < self.pts[20][1] and self.pts[8][1] < self.pts[10][1]:
-                ch1 = 6
-
-        # condition for [c0][x]
-        l = [[2, 1], [2, 2], [2, 6], [2, 7], [2, 0]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.distance(self.pts[8], self.pts[16]) > 50:
-                ch1 = 6
-
-        # con for [l][x]
-
-        l = [[4, 6], [4, 2], [4, 1], [4, 4]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.distance(self.pts[4], self.pts[11]) < 60:
-                ch1 = 6
-
-        # con for [x][d]
-        l = [[1, 4], [1, 6], [1, 0], [1, 2]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[5][0] - self.pts[4][0] - 15 > 0:
-                ch1 = 6
-
-        # con for [b][pqz]
-        l = [[5, 0], [5, 1], [5, 4], [5, 5], [5, 6], [6, 1], [7, 6], [0, 2], [7, 1], [7, 4], [6, 6], [7, 2], [5, 0],
-             [6, 3], [6, 4], [7, 5], [7, 2]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and self.pts[18][1] > self.pts[20][
-                1]):
-                ch1 = 1
-
-        # con for [f][pqz]
-        l = [[6, 1], [6, 0], [0, 3], [6, 4], [2, 2], [0, 6], [6, 2], [7, 6], [4, 6], [4, 1], [4, 2], [0, 2], [7, 1],
-             [7, 4], [6, 6], [7, 2], [7, 5], [7, 2]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[6][1] < self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and
-                    self.pts[18][1] > self.pts[20][1]):
-                ch1 = 1
-
-        l = [[6, 1], [6, 0], [4, 2], [4, 1], [4, 6], [4, 4]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and
-                    self.pts[18][1] > self.pts[20][1]):
-                ch1 = 1
-
-        # con for [d][pqz]
-        fg = 19
-        l = [[5, 0], [3, 4], [3, 0], [3, 1], [3, 5], [5, 5], [5, 4], [5, 1], [7, 6]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if ((self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and
-                 self.pts[18][1] < self.pts[20][1]) and (self.pts[2][0] < self.pts[0][0]) and self.pts[4][1] > self.pts[14][1]):
-                ch1 = 1
-
-        l = [[4, 1], [4, 2], [4, 4]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.distance(self.pts[4], self.pts[11]) < 50) and (
-                    self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] <
-                    self.pts[20][1]):
-                ch1 = 1
-
-        l = [[3, 4], [3, 0], [3, 1], [3, 5], [3, 6]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if ((self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and
-                 self.pts[18][1] < self.pts[20][1]) and (self.pts[2][0] < self.pts[0][0]) and self.pts[14][1] < self.pts[4][1]):
-                ch1 = 1
-
-        l = [[6, 6], [6, 4], [6, 1], [6, 2]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[5][0] - self.pts[4][0] - 15 < 0:
-                ch1 = 1
-
-        # con for [i][pqz]
-        l = [[5, 4], [5, 5], [5, 1], [0, 3], [0, 7], [5, 0], [0, 2], [6, 2], [7, 5], [7, 1], [7, 6], [7, 7]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if ((self.pts[6][1] < self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and
-                 self.pts[18][1] > self.pts[20][1])):
-                ch1 = 1
-
-        # con for [yj][bfdi]
-        l = [[1, 5], [1, 7], [1, 1], [1, 6], [1, 3], [1, 0]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if (self.pts[4][0] < self.pts[5][0] + 15) and (
-            (self.pts[6][1] < self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and
-             self.pts[18][1] > self.pts[20][1])):
-                ch1 = 7
-
-        # con for [uvr]
-        l = [[5, 5], [5, 0], [5, 4], [5, 1], [4, 6], [4, 1], [7, 6], [3, 0], [3, 5]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if ((self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and
-                 self.pts[18][1] < self.pts[20][1])) and self.pts[4][1] > self.pts[14][1]:
-                ch1 = 1
-
-        # con for [w]
-        fg = 13
-        l = [[3, 5], [3, 0], [3, 6], [5, 1], [4, 1], [2, 0], [5, 0], [5, 5]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if not (self.pts[0][0] + fg < self.pts[8][0] and self.pts[0][0] + fg < self.pts[12][0] and self.pts[0][0] + fg < self.pts[16][0] and
-                    self.pts[0][0] + fg < self.pts[20][0]) and not (
-                    self.pts[0][0] > self.pts[8][0] and self.pts[0][0] > self.pts[12][0] and self.pts[0][0] > self.pts[16][0] and self.pts[0][0] > self.pts[20][
-                0]) and self.distance(self.pts[4], self.pts[11]) < 50:
-                ch1 = 1
-
-        # con for [w]
-        l = [[5, 0], [5, 5], [0, 1]]
-        pl = [ch1, ch2]
-        if pl in l:
-            if self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1]:
-                ch1 = 1
-
-        # -------------------------condn for 8 groups ends
-
-        # -------------------------condn for subgroups  starts
-        if ch1 == 0:
-            ch1 = 'S'
-            if self.pts[4][0] < self.pts[6][0] and self.pts[4][0] < self.pts[10][0] and self.pts[4][0] < self.pts[14][0] and self.pts[4][0] < self.pts[18][0]:
-                ch1 = 'A'
-            if self.pts[4][0] > self.pts[6][0] and self.pts[4][0] < self.pts[10][0] and self.pts[4][0] < self.pts[14][0] and self.pts[4][0] < self.pts[18][
-                0] and self.pts[4][1] < self.pts[14][1] and self.pts[4][1] < self.pts[18][1]:
-                ch1 = 'T'
-            if self.pts[4][1] > self.pts[8][1] and self.pts[4][1] > self.pts[12][1] and self.pts[4][1] > self.pts[16][1] and self.pts[4][1] > self.pts[20][1]:
-                ch1 = 'E'
-            if self.pts[4][0] > self.pts[6][0] and self.pts[4][0] > self.pts[10][0] and self.pts[4][0] > self.pts[14][0] and self.pts[4][1] < self.pts[18][1]:
-                ch1 = 'M'
-            if self.pts[4][0] > self.pts[6][0] and self.pts[4][0] > self.pts[10][0] and self.pts[4][1] < self.pts[18][1] and self.pts[4][1] < self.pts[14][1]:
-                ch1 = 'N'
-
-        if ch1 == 2:
-            if self.distance(self.pts[12], self.pts[4]) > 42:
-                ch1 = 'C'
-            else:
-                ch1 = 'O'
-
-        if ch1 == 3:
-            if (self.distance(self.pts[8], self.pts[12])) > 72:
-                ch1 = 'G'
-            else:
-                ch1 = 'H'
-
-        if ch1 == 7:
-            if self.distance(self.pts[8], self.pts[4]) > 42:
-                ch1 = 'Y'
-            else:
-                ch1 = 'J'
-
-        if ch1 == 4:
-            ch1 = 'L'
-
-        if ch1 == 6:
-            ch1 = 'X'
-
-        if ch1 == 5:
-            if self.pts[4][0] > self.pts[12][0] and self.pts[4][0] > self.pts[16][0] and self.pts[4][0] > self.pts[20][0]:
-                if self.pts[8][1] < self.pts[5][1]:
-                    ch1 = 'Z'
-                else:
-                    ch1 = 'Q'
-            else:
-                ch1 = 'P'
-
-        if ch1 == 1:
-            if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and self.pts[18][1] > self.pts[20][
-                1]):
-                ch1 = 'B'
-            if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] < self.pts[20][
-                1]):
-                ch1 = 'D'
-            if (self.pts[6][1] < self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and self.pts[18][1] > self.pts[20][
-                1]):
-                ch1 = 'F'
-            if (self.pts[6][1] < self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] > self.pts[20][
-                1]):
-                ch1 = 'I'
-            if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and self.pts[18][1] < self.pts[20][
-                1]):
-                ch1 = 'W'
-            if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] < self.pts[20][
-                1]) and self.pts[4][1] < self.pts[9][1]:
-                ch1 = 'K'
-            if ((self.distance(self.pts[8], self.pts[12]) - self.distance(self.pts[6], self.pts[10])) < 8) and (
-                    self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] <
-                    self.pts[20][1]):
-                ch1 = 'U'
-            if ((self.distance(self.pts[8], self.pts[12]) - self.distance(self.pts[6], self.pts[10])) >= 8) and (
-                    self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] <
-                    self.pts[20][1]) and (self.pts[4][1] > self.pts[9][1]):
-                ch1 = 'V'
-
-            if (self.pts[8][0] > self.pts[12][0]) and (
-                    self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] <
-                    self.pts[20][1]):
-                ch1 = 'R'
-
-        if ch1 == 1 or ch1 =='E' or ch1 =='S' or ch1 =='X' or ch1 =='Y' or ch1 =='B':
-            if (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] < self.pts[12][1] and self.pts[14][1] < self.pts[16][1] and self.pts[18][1] > self.pts[20][1]):
-                ch1=" "
-
-        if ch1 == 'E' or ch1=='Y' or ch1=='B':
-            if (self.pts[4][0] < self.pts[5][0]) and (self.pts[6][1] > self.pts[8][1] and self.pts[10][1] > self.pts[12][1] and self.pts[14][1] > self.pts[16][1] and self.pts[18][1] > self.pts[20][1]):
-                ch1="next"
-
-
-        if ch1 == 'Next' or 'B' or 'C' or 'H' or 'F' or 'X':
-            if (self.pts[0][0] > self.pts[8][0] and self.pts[0][0] > self.pts[12][0] and self.pts[0][0] > self.pts[16][0] and self.pts[0][0] > self.pts[20][0]) and (self.pts[4][1] < self.pts[8][1] and self.pts[4][1] < self.pts[12][1] and self.pts[4][1] < self.pts[16][1] and self.pts[4][1] < self.pts[20][1]) and (self.pts[4][1] < self.pts[6][1] and self.pts[4][1] < self.pts[10][1] and self.pts[4][1] < self.pts[14][1] and self.pts[4][1] < self.pts[18][1]):
-                ch1 = 'Backspace'
-
-        if ch1=="next" and self.prev_char!="next":
+    def gest(self, ch):
+        if ch=="next" and self.prev_char!="next":
             if self.ten_prev_char[(self.count-2)%10]!="next":
-                if self.ten_prev_char[(self.count-2)%10]=="Backspace":
+                if self.ten_prev_char[(self.count-2)%10]=="":
                     self.str=self.str[0:-1]
                 else:
-                    if self.ten_prev_char[(self.count - 2) % 10] != "Backspace":
+                    if self.ten_prev_char[(self.count - 2) % 10] != "":
                         self.str = self.str + self.ten_prev_char[(self.count-2)%10]
             else:
-                if self.ten_prev_char[(self.count - 0) % 10] != "Backspace":
+                if self.ten_prev_char[(self.count - 0) % 10] != "":
                     self.str = self.str + self.ten_prev_char[(self.count - 0) % 10]
 
-        if ch1=="  " and self.prev_char!="  ":
+        if ch=="  " and self.prev_char!="  ":
             self.str = self.str + "  "
 
-        self.prev_char=ch1
-        self.current_symbol=ch1
+        self.prev_char=ch
+        self.current_symbol=ch
         self.count += 1
-        self.ten_prev_char[self.count%10]=ch1
+        self.ten_prev_char[self.count%10]=ch
 
     def destructor(self):
         print("Closing Application...")
