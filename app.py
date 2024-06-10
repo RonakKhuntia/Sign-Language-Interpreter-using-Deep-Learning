@@ -32,6 +32,7 @@ class Application:
         self.prev_char=""
         self.count=-1
         self.ten_prev_char=[]
+        self.acc = 0
         for i in range(10):
              self.ten_prev_char.append(" ")
 
@@ -68,6 +69,13 @@ class Application:
         self.T3 = tk.Label(self.root)
         self.T3.place(x=10, y=632)
         self.T3.config(text="Sentence :", font=("Courier", 30, "bold"))
+
+        self.panel6 = tk.Label(self.root)  # Accuracy
+        self.panel6.place(x=260, y=682)
+
+        self.T4 = tk.Label(self.root)
+        self.T4.place(x=10, y=682)
+        self.T4.config(text="Accuracy :", font=("Courier", 30, "bold"))
 
         self.speak = tk.Button(self.root)
         self.speak.place(x=1305, y=630)
@@ -151,6 +159,8 @@ class Application:
                     self.panel3.config(text=self.current_symbol, font=("Courier", 30)) #Current Symbol
 
             self.panel5.config(text=self.str, font=("Courier", 30), wraplength=1025) #Sentence
+
+            self.panel6.config(text=self.acc, font=("Courier", 30), wraplength=1025) #Accuracy
         except Exception:
             print("==", traceback.format_exc())
         finally:
@@ -174,7 +184,9 @@ class Application:
     def predict(self, test_image):
         placeholder=test_image
         placeholder = placeholder.reshape(1, 400, 400, 3)
-        prob = np.array(self.model.predict(placeholder)[0], dtype='float32')
+        pred = np.array(self.model.predict(placeholder), dtype='float32')
+        prob = pred[0]
+        self.acc = "{:.2f}".format(np.max(pred)*100)
         ch1 = np.argmax(prob, axis=0)
         prob[ch1] = 0
         ch2 = np.argmax(prob, axis=0)

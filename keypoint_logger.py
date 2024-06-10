@@ -10,14 +10,14 @@ capture = cv2.VideoCapture(0)
 hd = HandDetector(maxHands=1)
 hd2 = HandDetector(maxHands=1)
 
-count = len(oss.listdir("data/images/A/"))
-c_dir = list(string.ascii_uppercase)
-c_dir.append('next')
-c_dir.append('backspace')
-c_dir.append('space')
+count = 0
+labels = list(string.ascii_uppercase)
+labels.append('next')
+labels.append('backspace')
+labels.append('space')
 
-dir_index = 0
-curr_dir = c_dir[dir_index]
+label_index = 0
+label = labels[label_index]
 
 offset = 15
 step = 1
@@ -73,7 +73,7 @@ while True:
 
         cv2.imshow("hand",skeleton1)
 
-        frame = cv2.putText(frame, "dir=" + curr_dir + "  count=" + str(count), (50,50),
+        frame = cv2.putText(frame, "label=" + str(label) + "  count=" + str(count), (50,50),
                             cv2.FONT_HERSHEY_SIMPLEX,
                             1, (255, 0, 0), 1, cv2.LINE_AA)
         cv2.imshow("frame", frame)
@@ -84,22 +84,22 @@ while True:
 
 
         if interrupt & 0xFF == ord('n'):
-            if((dir_index + 1) % 29 == 0):
-                dir_index = 0
+            if((label_index + 1) % 29 == 0):
+                label_index = 0
             else:
-                dir_index += 1 
-            curr_dir = c_dir[dir_index]
+                label_index += 1 
+            label = labels[label_index]
             flag = False
-            count = len(oss.listdir("data/images/" + (curr_dir) + "/"))
+            count = 0
 
         if interrupt & 0xFF == ord('p'):
-            if((dir_index - 1) == -1):
-                dir_index = 28
+            if((label_index - 1) == -1):
+                label_index = 28
             else:
-                dir_index -= 1 
-            curr_dir = c_dir[dir_index]
+                label_index -= 1 
+            label = labels[label_index]
             flag = False
-            count = len(oss.listdir("data/images/" + (curr_dir) + "/"))
+            count = 0
 
         if interrupt & 0xFF == ord('a'):
             if flag:
@@ -109,19 +109,14 @@ while True:
                 flag=True
 
         if flag==True:
-            if ic==180:
-                flag=False
             if step%3==0:
-                cv2.imwrite("data/images/" + (curr_dir) + "/" + str(count) + ".jpg",
-                            skeleton1)
                 resized_frame = cv2.resize(image, (28, 28))
                 gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
                 pixel_values = gray_frame.flatten()
-                label = dir_index
+                label = label_index
                 row = [label] + pixel_values.tolist()
                 writer.writerow(row)
                 count += 1
-                ic += 1
             step+=1
 
     except Exception:
