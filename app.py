@@ -13,7 +13,6 @@ import threading
 from PIL import Image, ImageTk
 
 hd = HandDetector(maxHands=1)
-hd2 = HandDetector(maxHands=1)
 
 os.environ["THEANO_FLAGS"] = "device=cuda, assert_no_cpu_op=True"
 
