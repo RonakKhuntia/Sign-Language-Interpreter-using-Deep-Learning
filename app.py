@@ -83,13 +83,8 @@ class Application:
         self.video_loop()
 
     def load_image(self):
-        # Open the image file
         img = Image.open(self.hand_signs_image)
-        
-        # Resize the image to fit the label size (optional)
         img = img.resize((400, 505), Image.Resampling.LANCZOS)
-        
-        # Convert the image to a Tkinter-compatible format
         self.img = ImageTk.PhotoImage(img)
 
 
