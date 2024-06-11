@@ -13,6 +13,8 @@ from PIL import Image, ImageTk
 
 hd = HandDetector(maxHands=1)
 
+offset = 28
+
 os.environ["THEANO_FLAGS"] = "device=cuda, assert_no_cpu_op=True"
 
 class Application:
@@ -110,7 +112,7 @@ class Application:
 
             if hands[0]:
                 hand = hands[0]
-                self.pts, roi = process_hands(cv2image_copy,hand[0]['bbox'])
+                self.pts, roi = process_hands(cv2image_copy,hand[0]['bbox'], offset)
                 prediction = np.array(self.model.predict(roi), dtype='float32')
                 self.acc = "{:.2f}".format(np.max(prediction)*100)
                 pred_char = process_label(prediction, self.pts, self.model)
@@ -144,9 +146,7 @@ class Application:
     def update_str(self, ch):
         if ch=="next" and self.prev_char!="next":
             if self.ten_prev_char[(self.count-2)%10]!="next":
-                self.str = self.str + self.ten_prev_char[(self.count-2)%10]
-            else:
-                self.str = self.str + self.ten_prev_char[(self.count - 0) % 10]
+                self.str = self.str + self.ten_prev_char[(self.count) % 10]
 
         self.prev_char=ch
         self.current_symbol=ch
