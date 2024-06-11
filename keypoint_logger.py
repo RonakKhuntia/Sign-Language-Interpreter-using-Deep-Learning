@@ -25,7 +25,7 @@ ic=0
 placeholder=np.ones((400,400),np.uint8)*255
 cv2.imwrite("placeholder.jpg",placeholder)
 
-train_dataset = 'data/dataset/sign_mnist_train.csv'
+train_dataset = 'data/dataset/sign_mnist_test.csv'
 file = open(train_dataset, mode='a', newline='')
 writer = csv.writer(file)
 
@@ -52,7 +52,7 @@ while True:
 
 
         if interrupt & 0xFF == ord('n'):
-            if((label_index + 1) % 29 == 0):
+            if((label_index + 1) % 28 == 0):
                 label_index = 0
             else:
                 label_index += 1 
@@ -62,7 +62,7 @@ while True:
 
         if interrupt & 0xFF == ord('p'):
             if((label_index - 1) == -1):
-                label_index = 28
+                label_index = 27
             else:
                 label_index -= 1 
             label = labels[label_index]

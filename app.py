@@ -1,5 +1,4 @@
 import numpy as np
-import math
 import cv2
 import os
 import traceback
@@ -7,7 +6,7 @@ import pyttsx3
 from keras.models import load_model
 from cvzone.HandTrackingModule import HandDetector
 from env.cvzone.HandProcessing import process_hands
-from env.keras.model.labels import process_label
+from env.cvzone.asl.labels import process_label
 import tkinter as tk
 import threading
 from PIL import Image, ImageTk
@@ -33,8 +32,6 @@ class Application:
         self.ten_prev_char=[]
         for i in range(10):
              self.ten_prev_char.append(" ")
-
-        print("Loaded model from disk")
 
         self.root = tk.Tk()
         self.root.title("Sign Language Interpreter")
@@ -76,15 +73,15 @@ class Application:
         self.T4.config(text="Accuracy :", font=("Courier", 30, "bold"))
 
         self.speak = tk.Button(self.root)
-        self.speak.place(x=1305, y=630)
+        self.speak.place(x=1400, y=600)
         self.speak.config(text="Speak", font=("Courier", 20), wraplength=100, command=self.speak_fun)
 
         self.clear = tk.Button(self.root)
-        self.clear.place(x=1205, y=630)
+        self.clear.place(x=1400, y=670)
         self.clear.config(text="Clear", font=("Courier", 20), wraplength=100, command=self.clear_fun)
 
         self.delete = tk.Button(self.root)
-        self.delete.place(x=1205, y=700)
+        self.delete.place(x=1400, y=740)
         self.delete.config(text="Delete", font=("Courier", 20), wraplength=100, command=self.backspace)
 
         self.str = " " #Sentence variable
@@ -116,8 +113,8 @@ class Application:
                 self.pts, roi = process_hands(cv2image_copy,hand[0]['bbox'])
                 prediction = np.array(self.model.predict(roi), dtype='float32')
                 self.acc = "{:.2f}".format(np.max(prediction)*100)
-                pred_char = process_label(prediction, self.pts)
-                self.gest(pred_char)
+                pred_char = process_label(prediction, self.pts, self.model)
+                self.update_str(pred_char)
 
                 self.panel3.config(text=self.current_symbol, font=("Courier", 30)) #Current Symbol
 
@@ -144,10 +141,7 @@ class Application:
     def backspace(self):
         self.str=self.str[0:-1]
 
-    def distance(self,x,y):
-        return math.sqrt(((x[0] - y[0]) ** 2) + ((x[1] - y[1]) ** 2))
-
-    def gest(self, ch):
+    def update_str(self, ch):
         if ch=="next" and self.prev_char!="next":
             if self.ten_prev_char[(self.count-2)%10]!="next":
                 if self.ten_prev_char[(self.count-2)%10]=="":
