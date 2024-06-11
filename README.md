@@ -32,7 +32,9 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 
 
 <h2>Requirements</h2>
-  
+
+- tensorflow
+
 - open-cv
 
 - cvzone
