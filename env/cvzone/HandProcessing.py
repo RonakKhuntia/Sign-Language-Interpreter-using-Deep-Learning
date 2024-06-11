@@ -3,7 +3,7 @@ from cvzone.HandTrackingModule import HandDetector
 
 hd2 = HandDetector(maxHands=1)
 
-def process_hands(image_copy, hand_bbox, placeholder_path="placeholder.jpg"):
+def process_hands(image_copy, hand_bbox, placeholder_path="env/cvzone/placeholder.jpg"):
     x, y, w, h = hand_bbox 
     offset = 29 
     image = image_copy[y - offset:y + h + offset, x - offset:x + w + offset]  

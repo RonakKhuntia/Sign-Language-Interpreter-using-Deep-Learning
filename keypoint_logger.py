@@ -22,10 +22,7 @@ step = 1
 flag=False
 ic=0
 
-placeholder=np.ones((400,400),np.uint8)*255
-cv2.imwrite("placeholder.jpg",placeholder)
-
-train_dataset = 'data/dataset/sign_mnist_test.csv'
+train_dataset = 'data/dataset/sign_mnist_train.csv'
 file = open(train_dataset, mode='a', newline='')
 writer = csv.writer(file)
 
