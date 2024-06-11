@@ -6,7 +6,7 @@ import pyttsx3
 from keras.models import load_model
 from cvzone.HandTrackingModule import HandDetector
 from env.cvzone.HandProcessing import process_hands
-from env.cvzone.asl.labels import process_label
+from env.keras.model.labels import process_label
 import tkinter as tk
 import threading
 from PIL import Image, ImageTk
