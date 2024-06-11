@@ -144,17 +144,9 @@ class Application:
     def update_str(self, ch):
         if ch=="next" and self.prev_char!="next":
             if self.ten_prev_char[(self.count-2)%10]!="next":
-                if self.ten_prev_char[(self.count-2)%10]=="":
-                    self.str=self.str[0:-1]
-                else:
-                    if self.ten_prev_char[(self.count - 2) % 10] != "":
-                        self.str = self.str + self.ten_prev_char[(self.count-2)%10]
+                self.str = self.str + self.ten_prev_char[(self.count-2)%10]
             else:
-                if self.ten_prev_char[(self.count - 0) % 10] != "":
-                    self.str = self.str + self.ten_prev_char[(self.count - 0) % 10]
-
-        if ch=="  " and self.prev_char!="  ":
-            self.str = self.str + "  "
+                self.str = self.str + self.ten_prev_char[(self.count - 0) % 10]
 
         self.prev_char=ch
         self.current_symbol=ch
