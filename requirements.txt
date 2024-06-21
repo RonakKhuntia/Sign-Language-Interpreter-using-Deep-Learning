@@ -1,3 +1,4 @@
+tensorflow
 opencv-python
 pyttsx3
 numpy
