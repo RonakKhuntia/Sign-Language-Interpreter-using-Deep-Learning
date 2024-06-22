@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import cv2
-import os, sys
+import os
 import traceback
 import pyttsx3
 from keras.models import load_model
