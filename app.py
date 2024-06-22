@@ -6,9 +6,6 @@ import traceback
 import pyttsx3
 from keras.models import load_model
 from cvzone.HandTrackingModule import HandDetector
-from string import ascii_uppercase
-import enchant
-ddd=enchant.Dict("en-US")
 hd = HandDetector(maxHands=1)
 hd2 = HandDetector(maxHands=1)
 import tkinter as tk
