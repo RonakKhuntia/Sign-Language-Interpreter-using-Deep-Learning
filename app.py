@@ -9,7 +9,8 @@ from cvzone.HandTrackingModule import HandDetector
 hd = HandDetector(maxHands=1)
 hd2 = HandDetector(maxHands=1)
 import tkinter as tk
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageFilter, ImageGrab
+import threading
 
 offset=29
 
@@ -25,6 +26,7 @@ class Application:
         self.speak_engine.setProperty("rate",130)
         voices=self.speak_engine.getProperty("voices")
         self.speak_engine.setProperty("voice",voices[0].id)
+        self.lock = threading.Lock()
 
         self.prev_char=""
         self.count=-1
@@ -89,12 +91,57 @@ class Application:
         self.current_symbol = ""  #Current Symbol variable
         self.acc = 0 #Accuracy Variable
 
+        self.camera_sources = ["Camera 0", "Camera 1", "Camera 2"]
+        self.camera_source_var = tk.StringVar(self.root)
+        self.camera_source_var.set(self.camera_sources[0])
+
+        self.camera_menu = tk.OptionMenu(self.root, self.camera_source_var, *self.camera_sources, command=self.change_camera)
+        self.camera_menu.place(x=1400, y=530)
+
+        self.error_label = tk.Label(self.root, text="", fg="red", font=("Courier", 20),bd=2, relief="solid")
+        self.error_label.place_forget()  # Initially hidden
+
         self.video_loop()
 
     def load_image(self):
         img = Image.open(self.hand_signs_image)
         img = img.resize((400, 505), Image.Resampling.LANCZOS)
         self.img = ImageTk.PhotoImage(img)
+
+    def change_camera(self, value):
+        source_index = self.camera_sources.index(value)
+        self.vs.release()
+        self.vs = cv2.VideoCapture(source_index)
+        # Check if the camera source is available
+        if not self.vs.isOpened():
+            self.error_label.config(text=f"Camera source {source_index} unavailable")
+            self.error_label.place(x=500, y=300)
+            self.root.after(5000, self.hide_error_label)
+            self.blur_background()
+        
+    def hide_error_label(self):
+        self.error_label.place_forget()
+        self.unblur_background()
+
+    def blur_background(self):
+        background_img = self.take_screenshot()
+        blurred_img = background_img.filter(ImageFilter.GaussianBlur(radius=10))
+        self.blurred_background = ImageTk.PhotoImage(image=blurred_img)
+        self.blur_label = tk.Label(self.root, image=self.blurred_background)
+        self.blur_label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.blur_label.lower(self.error_label)  # Ensure the error label is on top
+
+    def unblur_background(self):
+        self.blur_label.place_forget()
+
+    def take_screenshot(self):
+        x = self.root.winfo_rootx()
+        y = self.root.winfo_rooty()
+        w = self.root.winfo_width()
+        h = self.root.winfo_height()
+        bbox = (x, y, x + w, y + h)
+        screenshot = ImageGrab.grab(bbox=bbox)
+        return screenshot
 
     def video_loop(self):
         try:
@@ -154,10 +201,6 @@ class Application:
                     res=white
                     self.predict(res)
 
-                    self.current_image2 = Image.fromarray(res)
-
-                    imgtk = ImageTk.PhotoImage(image=self.current_image2)
-
                     self.panel3.config(text=self.current_symbol, font=("Courier", 30))
 
             self.panel5.config(text=self.str, font=("Courier", 30), wraplength=1025)
@@ -171,8 +214,12 @@ class Application:
         return math.sqrt(((x[0] - y[0]) ** 2) + ((x[1] - y[1]) ** 2))
 
     def speak_fun(self):
-        self.speak_engine.say(self.str)
-        self.speak_engine.runAndWait()
+        threading.Thread(target=self.speak_text).start()
+
+    def speak_text(self):
+        with self.lock:
+            self.speak_engine.say(self.str)
+            self.speak_engine.runAndWait()
 
     def clear_fun(self):
         self.str=" "
