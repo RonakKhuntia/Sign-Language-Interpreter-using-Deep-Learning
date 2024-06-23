@@ -116,7 +116,7 @@ class Application:
         if not self.vs.isOpened():
             self.error_label.config(text=f"Camera source {source_index} unavailable")
             self.error_label.place(x=500, y=300)
-            self.root.after(5000, self.hide_error_label)
+            self.root.after(3000, self.hide_error_label)
             self.blur_background()
         
     def hide_error_label(self):
