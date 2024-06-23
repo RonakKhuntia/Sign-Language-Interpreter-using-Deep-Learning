@@ -39,6 +39,8 @@ https://github.com/RonakKhuntia/Sign-Language-Interpreter-using-Deep-Learning/as
 
 - cvzone
 
+- mediapipe
+
 - numpy
 
 - pyttsx3
